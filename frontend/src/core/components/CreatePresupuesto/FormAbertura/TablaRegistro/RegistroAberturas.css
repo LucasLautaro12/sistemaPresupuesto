@@ -1,0 +1,132 @@
+.registro-aberturas {
+  background-color: #ffffff; /* Fondo blanco */
+  border: 1px solid #ddd; /* Borde tenue */
+  border-radius: 10px; /* Bordes redondeados */
+  padding: 20px; /* Espaciado interno */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+  margin-top: 20px; /* Separación del formulario */
+}
+
+.tabla-nueva {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  color: #333; /* Texto oscuro */
+}
+
+.tabla-nueva th {
+  background-color: #f8f9fa; /* Fondo claro para encabezados */
+  text-align: left;
+  font-weight: 600;
+  padding: 10px;
+  border-bottom: 2px solid #ddd; /* Línea divisoria */
+}
+
+.tabla-nueva td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabla-nueva tr:hover {
+  background-color: #f1f1f1; /* Resaltado al pasar el ratón */
+}
+
+.edit-button, .delete-button {
+  background-color: transparent;  /* Fondo transparente */
+  border: none;  /* Sin borde */
+  color: #333;  /* Gris oscuro para el texto, que es más suave que el negro */
+  font-size: 18px;  /* Tamaño adecuado para los íconos */
+  cursor: pointer;  /* Cambia el cursor a mano para indicar acción */
+  padding: 5px;  /* Espaciado cómodo alrededor del ícono */
+  display: inline-flex;  /* Asegura que los botones se alineen de manera horizontal */
+  align-items: center;  /* Centra los íconos verticalmente */
+  transition: color 0.3s ease, transform 0.3s ease;  /* Transición suave para el color y el efecto de transformación */
+}
+
+.edit-button:hover, .delete-button:hover {
+  color: #007bff;  /* Color azul para el hover (para ambos botones) */
+  transform: scale(1.1);  /* Levemente aumenta el tamaño al hacer hover */
+}
+
+.edit-button:focus, .delete-button:focus {
+  outline: none;  /* Elimina el borde de enfoque */
+}
+
+.delete-button {
+  color: #dc3545;  /* Rojo para el ícono de eliminar */
+}
+
+.delete-button:hover {
+  color: #c82333;  /* Rojo más oscuro para el hover de eliminar */
+}
+
+
+/* RegistroAberturas.css */
+.cliente-info {
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.cliente-info p {
+  margin: 5px 0;
+}
+
+.cliente-info strong {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .tabla-nueva,
+  .tabla-nueva thead,
+  .tabla-nueva tbody,
+  .tabla-nueva tr,
+  .tabla-nueva th,
+  .tabla-nueva td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box; /* Incluye padding y border en el ancho total */
+  }
+
+  /* Oculta el encabezado */
+  .tabla-nueva thead {
+    display: none;
+  }
+
+  /* Estilos para cada tarjeta (fila) */
+  .tabla-nueva tr {
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #fff;
+  }
+
+  /* Estilos para las celdas */
+  .tabla-nueva td {
+    position: relative;
+    padding: 10px 10px 10px 45%; /* El padding izquierdo crea espacio para la etiqueta */
+    border: none;
+    border-bottom: 1px dashed #ccc;
+    text-align: right;  /* Alinea el contenido a la derecha */
+  }
+
+  /* Quita la línea punteada en la última celda */
+  .tabla-nueva td:last-child {
+    border-bottom: none;
+  }
+
+  /* Pseudo-elemento para mostrar la etiqueta a la izquierda */
+  .tabla-nueva td:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    width: 35%; /* Ajusta este valor según tus necesidades */
+    font-weight: bold;
+    text-align: left;
+    box-sizing: border-box;
+  }
+}

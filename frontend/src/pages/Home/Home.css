@@ -1,0 +1,19 @@
+.home-page {
+    position: static;
+    display: flex;
+    flex-direction: column;
+}
+
+.background-image {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    z-index: -1; /* Coloca el fondo detrÃ¡s de los demÃ¡s elementos */
+    pointer-events: none; /* Para que no interfiera con la interacciÃ³n del usuario */
+}
+
+.Contenido{
+    background-color:  black;
+ }

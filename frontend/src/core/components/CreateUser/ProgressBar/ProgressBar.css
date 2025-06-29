@@ -1,0 +1,59 @@
+.progress-bar {
+  display: flex;
+  justify-content: space-between;
+  width: 90%; /* Ajusta el ancho de manera flexible */
+  max-width: 540px; /* Mantiene el ancho máximo */
+  margin: 0 auto; /* Centra la barra */
+  margin-bottom: 10px;
+}
+
+.step {
+  width: 2rem;
+  height: 2rem;
+  background-color: #ccc;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  flex-shrink: 0; /* Evita que los pasos se reduzcan en pantallas pequeñas */
+}
+
+.step.active {
+  background-color: #204065;
+}
+
+/* Responsivo para pantallas pequeñas */
+@media screen and (max-width: 480px) {
+  .progress-bar {
+    width: 95%; /* Asegura que ocupe casi todo el ancho disponible */
+  }
+
+  .step {
+    width: 1.8rem; /* Reduce ligeramente el tamaño */
+    height: 1.8rem;
+    font-size: 0.875rem; /* Reduce el tamaño del texto */
+  }
+}
+
+/* Responsivo para tablets */
+@media screen and (min-width: 481px) and (max-width: 1024px) {
+  .progress-bar {
+    width: 80%;
+  }
+
+  .step {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1rem;
+  }
+}
+
+/* Para pantallas grandes */
+@media screen and (min-width: 1025px) {
+  .progress-bar {
+    max-width: 540px;
+  }
+}

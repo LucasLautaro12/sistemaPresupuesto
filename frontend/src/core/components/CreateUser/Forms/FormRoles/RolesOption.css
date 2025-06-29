@@ -1,0 +1,71 @@
+.roles-option{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 10px;
+  width: 120px;
+  height: 120px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.roles-option.selected {
+  border-color: #023552;
+  background-color: #eef6fb;
+}
+
+.roles-option .icon {
+  width: 80px;
+  height: 80px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin-bottom: 10px;
+}
+
+.roles-option p {
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+
+/* Iconos específicos */
+.comercial-vendedor-icon {
+  background-image: url('/FormUser/Roles/Comercial/Vendedor.png');
+}
+
+.comercial-jefe-comercial-icon {
+  background-image: url('/FormUser/Roles/Comercial/Presupuestador.png');
+}
+
+.comercial-asistente-icon {
+  background-image: url('');
+}
+
+.producto {
+  background-image: url('');
+}
+
+.compras {
+  background-image: url('');
+}
+
+.produccion {
+  background-image: url('');
+}
+
+.instalacion {
+  background-image: url('');
+}
+
+.administracion {
+  background-image: url('');
+}

@@ -1,0 +1,5 @@
+node_modules
+.env
+/uploads/
+/dist
+back_end/src/config/bot-vexar-prueba-f033b7f2db43.json

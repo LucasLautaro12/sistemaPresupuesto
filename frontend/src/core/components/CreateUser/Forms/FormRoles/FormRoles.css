@@ -1,0 +1,28 @@
+.roles-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);/* Tres columnas */
+  gap: 20px;/* Espaciado entre las opciones */
+  margin-bottom: 15px;
+  justify-items: center;
+}
+
+/* Responsive para pantallas medianas (tablets) */
+@media screen and (max-width: 1024px) {
+  .form-layout {
+    top: 250px;
+  }
+  .roles-options {
+    grid-template-columns: repeat(2, 1fr); /* Dos columnas en tablets */
+  }
+}
+
+/* Responsive para pantallas pequeñas (móviles) */
+@media screen and (max-width: 600px) {
+  .form-layout {
+    top: 305px;
+  }
+  
+  .roles-options {
+    grid-template-columns: repeat(1, 1fr); /* Una columna en móviles */
+  }
+}

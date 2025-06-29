@@ -1,0 +1,16 @@
+.department-options-container {
+  max-height: 400px; /* Ajusta la altura máxima del contenedor */
+  overflow-y: auto; /* Habilita el scroll vertical */
+  padding-right: 10px; /* Espacio para evitar que el scroll tape contenido */
+  box-sizing: border-box;
+}
+
+/* Mantén el diseño de opciones */
+.department-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 15px;
+  justify-items: center;
+  padding: 10px; /* Espaciado interno para el contenido */
+}

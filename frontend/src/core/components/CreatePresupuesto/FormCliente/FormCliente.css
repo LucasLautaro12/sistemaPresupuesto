@@ -1,0 +1,31 @@
+.cliente-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 4 columnas */
+  gap: 16px; /* Espaciado entre los inputs */
+  padding: 16px;
+}
+
+.form-buttons2 {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .presupuesto-form-layout {
+    position: static !important; /* o relative */
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    margin: 15px auto;
+    width: 95% !important;
+  }
+  .form-buttons2 {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 20px; /* Añade espacio horizontal entre los botones */
+  }
+  
+}
+

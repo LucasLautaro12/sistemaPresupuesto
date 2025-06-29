@@ -1,0 +1,107 @@
+/* src/core/components/Sidebar.css */
+
+.sidebar.open {
+    left: 0; /* Mueve el sidebar a la posiciÃ³n visible */
+}
+
+/* Sidebar.css */
+.sidebar {
+    position: fixed; /* Para asegurarlo en la pantalla */
+    top: 45px; /* Debajo del header */
+    left: -150px; /* Oculto inicialmente */
+    width: 150px;
+    height: 100%;
+    background-color: rgba(32, 64, 101, 0.8);
+    color: #FFFFFF;
+    padding-top: 20px;
+    transition: left 0.3s ease; /* AnimaciÃ³n suave */
+    z-index: 1000;
+}
+
+.menu-toggle {
+    position:static;
+    top: 50px; /* Alineado con el header */
+    left: 0px;
+    transform: translateX(0);
+    background-color: rgba(32, 64, 101, 0.8);
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 9000;
+    border-radius: 0 15px 15px 0; /* Solo esquinas derecha superior e inferior */
+    padding: 6px 10px;
+    transition: left 0.3s ease; /* Movimiento sincronizado con el menÃº */
+    pointer-events: auto;
+}
+
+/* Estado cuando el botón se mueve a la derecha */
+.menu-toggle.active {
+    transform: translateX(150px); /* Mueve 300px hacia la derecha */
+}
+
+.menu-toggle span {
+    color: white; /* Color del Ã­cono */
+    font-size: 20px; /* TamaÃ±o para destacarlo mÃ¡s */
+    z-index: 2100; /* Por encima del color de fondo */
+}
+
+.menu-toggle.open {
+    left: 150px;
+    background-color: rgba(32, 64, 101, 0.8);
+    color: rgba(32, 64, 101, 1);
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.sidebar ul li:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar ul li.selected {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: rgba(32, 64, 101, 1);
+    font-weight: bold;
+}
+
+/* Estilo para la imagen */
+.sidebar-image {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 130px;
+    height: auto;
+    margin-bottom: 20px;
+    bottom: 80px;
+}
+
+#menu-toggle-container {
+    position: fixed; /* Fijo a la ventana del navegador */
+    top: 0;
+    left: 0;
+    width: 100%; /* Cubre toda la pantalla si es necesario */
+    height: 0; /* No afecta otros elementos */
+    z-index: 10000; /* Siempre encima del contenido */
+    pointer-events: none; /* Evita interferencias en el contenedor */
+}
+
+@media screen and (max-width: 768px) {
+    .sidebar {
+        top: 45px; /* Debajo del header */
+    }
+    .menu-toggle {
+        position:static;
+        top: 55px; /* Alineado con el header */
+    }
+}

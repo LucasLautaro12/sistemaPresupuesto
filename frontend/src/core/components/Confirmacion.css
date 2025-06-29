@@ -1,0 +1,54 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(128, 128, 128, 0.9) 25%, rgba(128, 128, 128, 0.7) 50%, rgba(128, 128, 128, 0.3) 75%, rgba(128, 128, 128, 0) 100%);
+  z-index: 999; /* Justo debajo del modal */
+}
+
+.confirmation-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000; /* Por encima del overlay */
+  background: white; /* Fondo del modal */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 8px 40px 1000px rgba(0, 0, 0, 0.5); /* Sombra más fuerte para resaltar */
+  text-align: center
+}
+
+  
+  .confirmation-modal input {
+    margin-bottom: 10px;
+    width: 100%;
+  }
+  
+  .confirmation-modal button {
+    margin-right: 10px;
+  }
+ 
+  .confirmation-modal h4 {
+    font-weight: normal; /* Remueve la negrita */
+    margin-top: 10px; /* Ajusta el espaciado si es necesario */
+    font-size: 1rem; /* Ajusta el tamaño si es necesario */
+  }
+
+/* Bloquea la interacción solo cuando se muestra el modal de confirmación */
+.block-interactions.modal-active * {
+  pointer-events: none; /* Bloquea clics en todo */
+}
+
+.block-interactions.modal-active .modal-overlay,
+.block-interactions.modal-active .confirmation-modal,
+.block-interactions.modal-active .confirmation-modal * {
+  pointer-events: all; /* Permite clics solo en el modal de confirmación */
+}
+
+/* Permite interacciones normales cuando estás en modo edición */
+.block-interactions.editing-active {
+  pointer-events: all; /* Desbloquea todas las interacciones */
+}

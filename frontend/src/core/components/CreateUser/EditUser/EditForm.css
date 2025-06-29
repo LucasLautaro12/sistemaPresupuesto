@@ -1,0 +1,159 @@
+.edit-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 550px; /* Para evitar que ocupe toda la pantalla */
+    overflow-y: auto; /* Scroll en todo el formulario */
+    padding: 10px;
+}
+
+
+
+.edit-form {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 500px;
+    max-width: 90%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+}
+
+
+
+/* 🔹 Contenedor que agrupa las dos secciones en dos columnas */
+.permisos-container {
+    display: flex;
+    gap: 20px; /* Espacio entre columnas */
+}
+
+/* 🔹 Cada columna ocupa la mitad del ancho */
+.permisos-columna {
+    flex: 1; /* Que ambas columnas ocupen el mismo espacio */
+    min-width: 0; /* Para evitar problemas de ajuste */
+}
+
+
+
+/* 🔹 Ajustar la lista de Permisos Opcionales para que sea más compacta */
+.permisos-opcionales {
+    font-size: 0.75rem;
+    line-height: 1.2;
+    background: #f9f9f9;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-top: 8px; /* 🔹 Agregar margen superior para igualar el espaciado */
+}
+
+/* 🔹 Alinear checkbox a la izquierda */
+.permisos-opcionales div {
+    display: flex;
+    align-items: center; /* Alinear verticalmente */
+    gap: 5px; /* Espaciado entre checkbox y texto */
+    padding: 5px 0; /* Espaciado mínimo entre elementos */
+}
+
+/* 🔹 Ajustar tamaño de los checkboxes */
+.permisos-opcionales input[type="checkbox"] {
+    width: 14px; /* Tamaño del checkbox */
+    height: 14px;
+    margin: 0px; /* Eliminar márgenes innecesarios */
+}
+
+
+/* 🔹 Reducir el tamaño de la fuente en los permisos y agregar espacio entre ellos */
+.readonly-permissions {
+    font-size: 0.75rem; /* Letra más chica */
+    line-height: 1.4; /* Espaciado entre líneas */
+    background: #f9f9f9;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+/* 🔹 Espaciado entre permisos para que no estén muy juntos */
+.readonly-permissions li {
+    padding: 3px 0;
+    list-style: none; /* Quitar el marcador de lista */
+}
+
+
+
+.edit-form label {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 3px;
+}
+
+.edit-form input,
+.edit-form select {
+    padding: 6px 8px;
+    font-size: 0.75rem;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.departments-wrapper {
+    grid-column: 1 / span 2;
+}
+
+.selected-departments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 8px;
+}
+
+.selected-department {
+    background-color: #e0e0e0;
+    border-radius: 15px;
+    padding: 3px 10px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+}
+
+.remove-department {
+    margin-left: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #d9534f;
+}
+
+.remove-department:hover {
+    opacity: 0.8;
+}
+
+.form-buttons {
+    grid-column: 1 / span 2;
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+}
+
+.form-buttons button {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.form-buttons button:hover {
+    background-color: #45a049;
+}
+
+.form-buttons button:nth-child(2) {
+    background-color: #f44336;
+}
+
+.form-buttons button:nth-child(2):hover {
+    background-color: #d32f2f;
+}

@@ -1,0 +1,51 @@
+.permissions-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas en desktop */
+    gap: 5px; /* Espaciado entre elementos */
+    margin: 20px 0;
+    justify-items: center;
+    padding-bottom: 20px;
+    overflow-y: auto; /* Habilita el scroll vertical si es necesario */
+    overflow-x: hidden;
+  }
+  
+  .permission-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #ffffff;
+    padding: 2px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 250px;
+  }
+  
+  .permission-option input {
+    margin-right: 10px;
+    transform: scale(1.2); /* Aumentar tamaño del checkbox */
+  }
+  
+  .permission-option label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    text-align: center;
+    margin-top: 8px;
+    
+  }
+  
+  
+  /* Responsivo */
+  @media screen and (max-width: 1024px) {
+    .permissions-list {
+      grid-template-columns: repeat(2, 1fr); /* 2 columnas en tablets */
+    }
+  }
+  
+  @media screen and (max-width: 600px) {
+    .permissions-list {
+      grid-template-columns: repeat(1, 1fr); /* 1 columna en móviles */
+    }
+  }
+  
