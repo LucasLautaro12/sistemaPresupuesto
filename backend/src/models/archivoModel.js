@@ -1,4 +1,4 @@
-import { getPool } from "../db.js";
+//import { getPool } from "../db.js";
 //import cloudinary from 'cloudinary';
 import { v2 as cloudinary } from 'cloudinary';
 

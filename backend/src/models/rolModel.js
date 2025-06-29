@@ -1,4 +1,4 @@
-import { getPool } from "../db.js";
+//import { getPool } from "../db.js";
 
 class Rol{
     constructor(idrol, nombre){

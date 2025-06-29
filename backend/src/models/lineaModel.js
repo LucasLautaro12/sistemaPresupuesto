@@ -1,4 +1,4 @@
-import { getPool } from '../db.js'
+//import { getPool } from '../db.js'
 
 //Clase Vidrio
 class Linea {

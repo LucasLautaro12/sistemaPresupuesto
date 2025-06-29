@@ -1,4 +1,4 @@
-import { getPool } from "../db.js"; //Exporto la conexion de la bd
+//import { getPool } from "../db.js"; //Exporto la conexion de la bd
 
 //POO Persona
 class Persona {

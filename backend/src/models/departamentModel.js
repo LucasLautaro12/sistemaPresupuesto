@@ -1,4 +1,4 @@
-import { getPool } from "../db.js";
+//import { getPool } from "../db.js";
 
 class Departamento{
     constructor(iddepartamento, nombre){

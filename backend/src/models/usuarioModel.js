@@ -1,4 +1,4 @@
-import { getPool } from "../db.js";
+//import { getPool } from "../db.js";
 import Persona from "./personaModel.js";
 
 //Clase Usuario extiende de Persona

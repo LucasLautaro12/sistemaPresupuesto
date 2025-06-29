@@ -30,5 +30,8 @@ app.use(userRoutes);
 app.use(tkRoutes);
 app.use(emailRouter);
 
+// Si querés exportar el servidor:
+const server = app; // No estás usando HTTP Server directamente
+export { server };
 
-export default app;
+//export default app;

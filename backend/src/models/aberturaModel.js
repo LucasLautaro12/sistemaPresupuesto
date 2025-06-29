@@ -1,4 +1,4 @@
-import { getPool } from "../db.js";
+//import { getPool } from "../db.js";
 import { getMaxId } from "./presupuestoModel.js";
 import { getLineaByTipolinea } from "../models/lineaModel.js";
 import { getTipologiaByNombre } from "./tipologiaModel.js";
