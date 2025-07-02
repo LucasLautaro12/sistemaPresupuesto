@@ -1,30 +1,16 @@
 //import { getPool } from "../db.js";
 
-class Rol{
-    constructor(idrol, nombre){
-        this.idrol = idrol;
-        this.nombre = nombre
-    }
-}
+import sequelize from "../db.js";
+import { DataTypes } from "sequelize";
 
-export const getRolByName = async (roles) => {
-    const pool = getPool()
-    const query = `
-        SELECT idrol 
-        FROM rol 
-        WHERE nombrerol = $1;
-    `;
 
-    try {
-        // Usamos Promise.all para esperar todas las consultas
-        const results = await Promise.all(roles.map(rol => pool.query(query, [rol.toUpperCase()])))
-        
-        // Extraemos los idrol de cada resultado
-        const ids = results.map(result => result.rows[0]?.idrol)
+export const Rol = sequelize.define('rol', {
+    idrol: { type: DataTypes.INTEGER, primaryKey: true },
+    nombrerol: DataTypes.STRING,
+},{tableName: 'rol', timestamps: false});
 
-        return ids
-    } catch (error) {
-        console.error("Error al consultar los idrol: ", error)
-        throw error
-    }
-}
+Rolpermiso.belongsTo(Rol, { foreignKey: 'idrol', onDelete: 'SET NULL' });
+Rol.hasMany(Rolpermiso, { foreignKey: 'idrol' });
+
+Rolpermiso.belongsTo(Permiso, { foreignKey: 'idpermiso', onDelete: 'SET NULL' });
+Permiso.hasMany(Rolpermiso, { foreignKey: 'idpermiso' });

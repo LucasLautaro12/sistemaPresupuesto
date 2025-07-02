@@ -1,9 +1,9 @@
 import {
   changeState,
   getContraseniaById,
-  getResponsables,
   getTodosUsuarios,
   updateUsuario,
+  Usuario,
 } from "../models/usuarioModel.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
@@ -121,15 +121,26 @@ export const modificarusuario = async (req, res) => {
 //Peticion GET
 export const responsables = async (req, res) => {
   try {
-    const usuariosResponsables = await getResponsables();
+    const usuariosResponsables = await Usuario.findAll({
+      attributes: ['dni'],
+      include: [
+        {
+          model: Persona,
+          attributes: ['apellido', 'nombre'],
+        },
+      ],
+      order: [['dni', 'ASC']]
+    });
 
-    const nombresCompletos = usuariosResponsables.map(
-      (user) => `${user.apellido} ${user.nombre}`
-    );
+    const nombresCompletos = usuariosResponsables.map((user) => {
+      const { apellido, nombre } = user.persona; // acceder al include
+      return `${apellido} ${nombre}`;
+    });
 
     res.json({ nombresCompletos });
   } catch (error) {
-    console.error("Error al obetner los responsables: ", error);
-    throw error;
+    console.error("Error al obtener los responsables:", error);
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
+

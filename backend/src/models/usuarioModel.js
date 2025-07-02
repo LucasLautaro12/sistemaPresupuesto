@@ -1,29 +1,23 @@
-//import { getPool } from "../db.js";
+import sequelize from "../db.js";
+import { DataTypes } from "sequelize";
 import Persona from "./personaModel.js";
 
-//Clase Usuario extiende de Persona
-class Usuario extends Persona {
-  constructor(
-    idpersona,
-    apellido,
-    nombre,
-    correo,
-    dni,
-    contrasenia,
-    estado,
-    roles,
-    permisos
-  ) {
-    super(idpersona, apellido, nombre, correo);
-    this.dni = dni;
-    this.contrasenia = contrasenia;
-    this.estado = estado;
-    this.roles = roles;
-    this.permisos = permisos;
-  }
-}
+export const Usuario = sequelize.define('usuario', {
+  dni: { type: DataTypes.INTEGER, primaryKey: true },
+  contrasenia: DataTypes.STRING,
+  estado: DataTypes.BOOLEAN,
+  departamento: DataTypes.STRING,
+  primer_ingreso: DataTypes.BOOLEAN,
+  idpersona: DataTypes.INTEGER,
+}, {
+  tableName: 'usuario',
+  timestamps: false,
+})
 
-export default Usuario;
+Usuario.belongsTo(Persona, { foreignKey: 'idpersona', onDelete: 'CASCADE' });
+Persona.hasOne(Usuario, { foreignKey: 'idpersona', })
+
+
 
 // Actualizar usuarioRol
 const actualizarUsuarioRol = async (dni, roles) => {
@@ -31,34 +25,34 @@ const actualizarUsuarioRol = async (dni, roles) => {
   const pool = getPool();
 
   try {
-      if (roles.length === 0) {
-          return { message: "No se enviaron roles para actualizar" };
-      }
+    if (roles.length === 0) {
+      return { message: "No se enviaron roles para actualizar" };
+    }
 
-      const valores = [];
-      const placeholders = roles.map((_, index) => `($1, $${index + 2})`).join(", ");
+    const valores = [];
+    const placeholders = roles.map((_, index) => `($1, $${index + 2})`).join(", ");
 
-      const queryInsert = `
+    const queryInsert = `
           INSERT INTO usuariorol (dni, idrol)
           VALUES ${placeholders}
           ON CONFLICT (dni, idrol) DO NOTHING;
       `;
 
-      valores.push(dni, ...roles);
+    valores.push(dni, ...roles);
 
-      await pool.query(queryInsert, valores);
+    await pool.query(queryInsert, valores);
 
-      return { message: "Roles actualizados correctamente" };
+    return { message: "Roles actualizados correctamente" };
   } catch (error) {
-      console.error("Error al actualizar los roles del usuario:", error);
-      throw error;
+    console.error("Error al actualizar los roles del usuario:", error);
+    throw error;
   }
 };
 
 // Actualizar rolPermiso
 const actualizarRolPermiso = async (rol, permisos) => {
   if (rol.length !== permisos.length) {
-      throw new Error("Las listas 'rol' y 'permisos' deben tener la misma longitud.");
+    throw new Error("Las listas 'rol' y 'permisos' deben tener la misma longitud.");
   }
 
   const query = `
@@ -67,19 +61,19 @@ const actualizarRolPermiso = async (rol, permisos) => {
   `;
 
   try {
-      const client = await pool.connect();
-      for (let i = 0; i < rol.length; i++) {
-          const idRol = rol[i];
-          const permisosLista = permisos[i];
+    const client = await pool.connect();
+    for (let i = 0; i < rol.length; i++) {
+      const idRol = rol[i];
+      const permisosLista = permisos[i];
 
-          for (const idPermiso of permisosLista) {
-              await client.query(query, [idRol, idPermiso]);
-          }
+      for (const idPermiso of permisosLista) {
+        await client.query(query, [idRol, idPermiso]);
       }
-      client.release();
-      console.log("Permisos actualizados correctamente.");
+    }
+    client.release();
+    console.log("Permisos actualizados correctamente.");
   } catch (error) {
-      console.error("Error al actualizar permisos:", error);
+    console.error("Error al actualizar permisos:", error);
   }
 };
 
@@ -368,15 +362,15 @@ export const updateUsuario = async (
         usuarioUpdates
       );
     }
-    console.log('Roles: ',rolesArray)
-    if (rolesArray.length > 0){
+    console.log('Roles: ', rolesArray)
+    if (rolesArray.length > 0) {
       await actualizarUsuarioRol(dni, rolesArray);
     }
-    console.log('Permisos: ',permisosMap)
-    if (rolesArray.length > 0 && permisosMap.length > 0){
+    console.log('Permisos: ', permisosMap)
+    if (rolesArray.length > 0 && permisosMap.length > 0) {
       await actualizarRolPermiso(rolesArray, permisosMap);
     }
-    
+
     await pool.query("COMMIT"); // Confirmar transacción
     return response;
   } catch (error) {
@@ -405,23 +399,6 @@ export const changeState = async (dni, stateUser) => {
   }
 };
 
-// Obtener responsables
-export const getResponsables = async () => {
-  const pool = getPool();
-  const query = `
-        SELECT u.dni, p.apellido, p.nombre, d.nombre
-        FROM usuario u
-        JOIN persona p ON u.idPersona = p.idPersona
-        JOIN departamento d ON d.iddepartamento = u.iddepartamento
-		    WHERE d.nombre = 'COMERCIAL' OR d.nombre = 'PRODUCTO'
-        ORDER BY u.dni`;
-  try {
-    const result = await pool.query(query);
-
-    return result.rows;
-  } catch (error) {}
-};
-
 // Obtener correos por dni
 export const getCorreoByDni = async (dni) => {
   const pool = getPool();
@@ -434,5 +411,5 @@ export const getCorreoByDni = async (dni) => {
   try {
     const result = await pool.query(query, [dni]);
     return result.rows[0].correo;
-  } catch (error) {}
+  } catch (error) { }
 };

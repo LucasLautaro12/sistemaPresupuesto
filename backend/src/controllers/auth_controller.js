@@ -1,72 +1,94 @@
-import Usuario, {
-  getDni,
-  saveUsuario,
-  getUsuarioByDNI,
-} from "../models/usuarioModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 /* import { TOKEN_SECRET } from "../config.js"; */
 import { createAccessToken } from "../libs/jwt.js";
 
 import "dotenv/config";
-import { getRolByName } from "../models/rolModel.js";
-import { getDepartamentoByName } from "../models/departamentModel.js";
-import { getMaxId } from "../models/presupuestoModel.js";
+import { Usuario } from "../models/usuarioModel.js";
+import { Persona } from "../models/personaModel.js";
 
 const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
 //Peticiones POST
+//Probar
 export const register = async (req, res) => {
   try {
     const { user, roles, department, permissions } = req.body;
-    
     const { apellido, nombre, dni, correo, contrasenia1, estado } = user;
 
-    const maxIdPersona = await getMaxId("idpersona","persona");
-    const idpersona = maxIdPersona + 1;
-
-    const usuarioExistente = await getDni(parseInt(dni));
+    // Verificamos si el usuario ya existe
+    const usuarioExistente = await Usuario.findByPk(parseInt(dni));
     if (usuarioExistente) {
       return res.status(400).json({ message: "El DNI ya está registrado." });
     }
 
-    const contraseniaHash = await bcrypt.hash(contrasenia1, 10);
+    // Calculamos el próximo ID de persona
+    const maxIdPersona = await Persona.max('idpersona');
+    const idpersona = (maxIdPersona || 0) + 1;
 
-    const usuario = new Usuario(
+    // Creamos la persona
+    await Persona.create({
       idpersona,
       apellido,
       nombre,
-      correo ? correo : '',
+      correo: correo || ''
+    });
+
+    // Encriptamos la contraseña
+    const contraseniaHash = await bcrypt.hash(contrasenia1, 10);
+
+    // Creamos el usuario
+    const nuevoUsuario = await Usuario.create({
       dni,
-      contraseniaHash,
+      contrasenia: contraseniaHash,
+      idpersona,
       estado,
-      department
-    );
-    
-    const idrol = await getRolByName(roles);
+      departamento: department,
+      primer_ingreso: true
+    });
 
-    const usuarioGuardado = await saveUsuario(
-      usuario,
-      idrol,
-      permissions
-    );
+    // Obtenemos el ID del rol
+    const rol = await Rol.findOne({ where: { nombrerol: roles } });
+    if (!rol) return res.status(404).json({ message: 'Rol no encontrado' });
 
+    await Usuariorol.create({
+      dni,
+      idrol: rol.idrol
+    });
+
+    // Si hay permisos, los asociamos (opcional)
+    if (permissions && permissions.length > 0) {
+      for (const permisoNombre of permissions) {
+        const permiso = await Permiso.findOne({ where: { nombre: permisoNombre } });
+        if (permiso) {
+          await Usuariopermiso.create({
+            dni,
+            idpermiso: permiso.idpermiso
+          });
+        }
+      }
+    }
+
+    // Generamos token
     const token = await createAccessToken({
-      idpersona: usuarioGuardado.idpersona,
+      idpersona: nuevoUsuario.idpersona
     });
 
     res.json({
-      idpersona: usuarioGuardado.idpersona,
-      dni: usuarioGuardado.dni,
-      correo: usuarioGuardado.correo,
+      idpersona,
+      dni: nuevoUsuario.dni,
+      correo: correo || '',
+      token
     });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
-    console.log("Error: ", error);
+    console.error("Error en el registro:", error);
+    res.status(500).json({ message: "Error interno del servidor." });
   }
 };
 
 //Peticiones POST
+//Probar
 export const login = async (req, res) => {
   try {
     const { dni, contrasenia } = req.body;
@@ -77,7 +99,7 @@ export const login = async (req, res) => {
       });
     }
 
-    const usuarioEncontrado = await getUsuarioByDNI(dni);
+    const usuarioEncontrado = await Usuario.findByPk(dni);
     if (!usuarioEncontrado || !usuarioEncontrado.estado) {
       return res.stauts(401).json({
         message: "Usuario Invalido.",
