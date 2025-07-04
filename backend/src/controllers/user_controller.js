@@ -1,22 +1,19 @@
-import {
-  changeState,
-  getContraseniaById,
-  getTodosUsuarios,
-  updateUsuario,
-  Usuario,
-} from "../models/usuarioModel.js";
+
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import "dotenv/config";
 import { getRolByName } from "../models/rolModel.js";
+import { Persona } from "../models/personaModel.js";
+import { Usuario } from "../models/usuarioModel.js";
 
 const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
 //Petición GET 
+//Probar
 export const usuario = async (req, res) => {
   try {
     // Obtén los usuarios de la base de datos
-    const usuarios = await getTodosUsuarios();
+    const usuarios = await Usuario.findAll();
 
     // Verifica si no hay usuarios
     if (!usuarios || usuarios.length === 0) {
@@ -48,6 +45,7 @@ export const usuario = async (req, res) => {
 };
 
 // Petición PUT
+//Probar
 export const usuarioInactive = async (req, res) => {
   try {
     // Extraer el token desde las cookies
@@ -65,16 +63,23 @@ export const usuarioInactive = async (req, res) => {
     const idpersona = decode.idpersona;
 
     // Obtener la contraseña hasheada asociada al usuario
-    const contraseniaHash = await getContraseniaById(idpersona);
+    const contraseniaHash = await Persona.findAll(idpersona);
 
     // Verificar que la contraseña proporcionada coincida con el hash
-    const coincide = await bcrypt.compare(contrasenia, contraseniaHash);
+    const coincide = bcrypt.compare(contrasenia, contraseniaHash);
     if (!coincide) {
       return res.status(403).json({ message: "Contraseña incorrecta." });
     }
 
     // Cambiar el estado del usuario
-    const usuarios = await changeState(dni, estado);
+    const usuarios = await Usuario.update(
+      { estado },
+      {
+        where: {
+          dni
+        }
+      }
+    );
 
     return res
       .status(200)
@@ -88,37 +93,8 @@ export const usuarioInactive = async (req, res) => {
   }
 };
 
-//Peticion PATCH
-export const modificarusuario = async (req, res) => {
-  const { dni } = req.body;
-  const { nombre, apellido, correo, departamento, roles } =
-    req.body.updatedData;
-
-  // Para manejar múltiples roles
-  const rolesArray = [];
-  const permisosMap = [];
-
-  for (const [rolNombre, permisos] of Object.entries(roles)) {
-    try {
-      const rolId = await getRolByName([rolNombre]); // Asegúrate de que se pasa como array
-      rolesArray.push(rolId[0]);
-      permisosMap.push(permisos);
-    } catch (error) {
-      console.error(`Error al obtener el ID del rol '${rolNombre}':`, error);
-    }
-  }
-  try {
-    await updateUsuario(dni, nombre, apellido, correo, departamento, rolesArray, permisosMap)
-    return res
-      .status(200)
-      .json({ message: "Usuario actualizado exitosamente." });
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
-
 //Peticion GET
+//Probar
 export const responsables = async (req, res) => {
   try {
     const usuariosResponsables = await Usuario.findAll({
@@ -143,4 +119,37 @@ export const responsables = async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
+
+//Peticion PATCH
+//Probar
+export const modificarusuario = async (req, res) => {
+  const { dni } = req.body;
+  const { nombre, apellido, correo, departamento, roles } =
+    req.body.updatedData;
+
+  // Para manejar múltiples roles
+  const rolesArray = [];
+  const permisosMap = [];
+
+  for (const [rolNombre, permisos] of Object.entries(roles)) {
+    try {
+      const rolId = await getRolByName([rolNombre]); // Asegúrate de que se pasa como array
+      rolesArray.push(rolId[0]);
+      permisosMap.push(permisos);
+    } catch (error) {
+      console.error(`Error al obtener el ID del rol '${rolNombre}':`, error);
+    }
+  }
+  try {
+    await Usuario.update({ nombre, apellido, correo, departamento, rolesArray, permisosMap }, { where: { dni } })
+    return res
+      .status(200)
+      .json({ message: "Usuario actualizado exitosamente." });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+
 
