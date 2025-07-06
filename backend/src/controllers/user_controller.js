@@ -2,7 +2,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import "dotenv/config";
-import { getRolByName } from "../models/rolModel.js";
 import { Persona } from "../models/personaModel.js";
 import { Usuario } from "../models/usuarioModel.js";
 

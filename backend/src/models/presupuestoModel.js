@@ -1,29 +1,19 @@
 //import { getPool } from "../db.js"; //Exporto la conexion de la bd
-import Cliente, { getClienteByCelular, saveCliente } from "./clientModel.js";
+import sequelize from "../db.js";
+import { DataTypes } from "sequelize";
 
-class Presupuesto {
-  constructor(
-    numpresupuesto,
-    fechainicio,
-    urgencia,
-    nota,
-    oktecnico,
-    estado,
-    fechaganada,
-    direccion
-  ) {
-    this.numpresupuesto = numpresupuesto;
-    this.fechainicio = fechainicio;
-    this.urgencia = urgencia;
-    this.nota = nota;
-    this.oktecnico = oktecnico;
-    this.estado = estado;
-    this.fechaganada = fechaganada;
-    this.direccion = direccion;
-  }
-}
+export const Presupuesto = sequelize.define('presupuesto', {
+  numpresupuesto: { type: DataTypes.INTEGER, primaryKey: true },
+  fechainicio: DataTypes.DATE,
+  urgencia: DataTypes.BOOLEAN,
+  nota: DataTypes.TEXT,
+  oktecnico: DataTypes.BOOLEAN,
+  estado: DataTypes.STRING,
+  fechaganada: DataTypes.DATE,
+  direccion: DataTypes.STRING
+}, { tableName: 'presupuesto', timestamps: false }
+);
 
-export default Presupuesto;
 //Obtener el numero maximo de presupuesto
 export const getMaxId = async (id, tabla) => {
   const pool = getPool();
@@ -64,7 +54,7 @@ export const savePresupuesto = async (cliente, nuevoPresupuesto, usuario) => {
     VALUES ($1, NOW(), $2, $3, $4, $5, $6, $7, $8) RETURNING numpresupuesto;`;
 
     const monto = 0
-  
+
     const clienteGuardado = await pool.query(queryPresupuesto, [
       nuevonumpresupuesto,
       nuevoPresupuesto.urgencia ? nuevoPresupuesto.urgencia.toUpperCase() === "SI" : false,

@@ -1,15 +1,14 @@
 //import { getPool } from "../db.js";
+import { DataTypes } from "sequelize";
+import sequelize from "../db.js";
 import { getMaxId } from "./presupuestoModel.js";
-import Persona from "./personaModel.js";
 
-class Cliente extends Persona {
-  constructor(idpersona, apellido, nombre, correo, celular) {
-    super(idpersona, apellido, nombre, correo);
-    this.celular = celular;
-  }
-}
 
-export default Cliente;
+export const Cliente = sequelize.define('clietne',{
+  celular: {
+    type: DataTypes.INTEGER, primaryKey: true
+  },
+},{tableName: 'cliente', timestamps: false})
 
 //Obtener Cliente
 export const getClienteByCelular = async (celular) => {

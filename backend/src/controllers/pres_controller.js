@@ -3,11 +3,6 @@ import path from "path";
 import moment from "moment";
 
 import { uploadFile, uploadImage } from "../config/cloudinaryService.js";
-import Presupuesto, {
-  savePresupuesto,
-  updateMonto,
-  updatePresupuesto,
-} from "../models/presupuestoModel.js";
 import { transformResult } from "../service/presupuestoService.js";
 import { saveArchivos } from "../models/archivoModel.js";
 import { saveAbertura } from "../models/aberturaModel.js";
