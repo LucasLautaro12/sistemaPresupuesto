@@ -1,3 +1,4 @@
+//user_routes
 import { Router } from "express";
 import { usuario, usuarioInactive, modificarusuario, responsables } from "../controllers/user_controller.js";
 import { auth } from "../middlewares/auth.js";

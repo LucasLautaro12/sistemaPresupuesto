@@ -1,3 +1,4 @@
+//auth_router.js
 import { Router } from "express";
 import {
   login,
@@ -20,6 +21,6 @@ router.post("/login", login);
 router.post("/logout", logout);
 
 // Desarrollo listo
-router.post("/verify", verify);
+router.post("/verify", auth, verify);
 
 export default router;

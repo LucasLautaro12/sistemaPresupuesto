@@ -162,7 +162,9 @@ export const logout = (req, res) => {
 //Peticiones POST
 export const verify = async (req, res) => {
   //Obtenemos el token
-  const token = req.body.token || req.headers.authorization?.split(" ")[1];
+  const token = req.cookies.token;
+
+  console.log(token)
   //Si no hay token
   if (!token) {
     return res.status(401).json({ message: "No token provided." });
