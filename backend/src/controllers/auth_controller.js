@@ -1,8 +1,26 @@
+/* 
+EJEMPLO DE REGISTRO DE USUARIO
+{
+  "user": {
+    "apellido": "González",
+    "nombre": "Lucía",
+    "dni": 45234567,
+    "correo": "lucia.gonzalez@example.com",
+    "contrasenia1": "Segura1234",
+    "estado": true
+  },
+  "roles": "ADMIN",
+  "department": "Sistemas",
+  "permissions": [
+    "ADMIN"
+  ]
+}
+*/
+
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import sequelize from "../db.js";
 import "dotenv/config";
-/* import { TOKEN_SECRET } from "../config.js"; */
 import { createAccessToken } from "../libs/jwt.js";
 import { Usuario } from "../models/usuarioModel.js";
 import { Persona } from "../models/personaModel.js";
@@ -62,10 +80,10 @@ export const register = async (req, res) => {
       const permisos = await Permiso.findAll({
         where: { nombre: permissions }
       });
-      for (const permiso of permisos){
+      for (const permiso of permisos) {
         await sequelize.query(
           'INSERT INTO rolpermiso (idrol, idpermiso) VALUES (:idrol, :idpermiso)',
-          { replacements: {idrol: rol.idrol, idpermiso: permiso.idpermiso}}
+          { replacements: { idrol: rol.idrol, idpermiso: permiso.idpermiso } }
         )
       }
     }
