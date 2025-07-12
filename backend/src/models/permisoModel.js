@@ -14,3 +14,18 @@ export const Permiso = sequelize.define('permiso', {
     timestamps: false
 })
 
+Rol.belongsToMany(Permiso, {
+    through: 'rolpermiso',
+    foreignKey: 'idrol',
+    otherKey: 'idpermiso',
+    timestamps: false
+  });
+
+Permiso.belongsToMany(Rol, {
+    through: 'rolpermiso',
+    foreignKey: 'idpermiso',
+    otherKey: 'idrol',
+    timestamps: false
+  });
+
+

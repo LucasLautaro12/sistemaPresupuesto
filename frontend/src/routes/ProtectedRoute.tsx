@@ -16,7 +16,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const { permisos } = useContext(AuthContext);
 
   console.log("isAuthenticated en ProtectedRoute:", isAuthenticated);
-  console.log("Permisos del usuario:", permisos);
+  console.log("Permisos del usuario:", useContext(AuthContext));
 
   // Si no está autenticado, redirige al login
   if (!isAuthenticated) {

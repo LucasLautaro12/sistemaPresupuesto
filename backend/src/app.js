@@ -6,6 +6,10 @@ import cors from 'cors';
 const app = express();
 const FRONT_PORT = process.env.FRONT_PORT || "http://localhost:5173";
 
+/* import { sequelize,} from './models/index.js';
+
+await sequelize.sync(); */
+
 // Middlewares
 app.use(morgan('dev'));
 app.use(express.json());

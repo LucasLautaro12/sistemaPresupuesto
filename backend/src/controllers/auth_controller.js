@@ -6,7 +6,6 @@ EJEMPLO DE REGISTRO DE USUARIO
     "nombre": "Lucía",
     "dni": 45234567,
     "correo": "lucia.gonzalez@example.com",
-    "contrasenia1": "Segura1234",
     "estado": true
   },
   "roles": "ADMIN",
@@ -118,7 +117,23 @@ export const login = async (req, res) => {
       });
     }
 
-    const usuarioEncontrado = await Usuario.findByPk(dni);
+    const usuarioEncontrado = await Usuario.findByPk(dni, {
+      include: [
+        {
+          model: Persona,
+          attributes: ['nombre', 'apellido', 'correo']
+        },
+        {
+          model: Rol,
+          as: 'rols',
+          include: [{
+            model: Permiso,
+            as: 'permisos'
+          }]
+        }
+      ]
+    });
+
     if (!usuarioEncontrado || !usuarioEncontrado.estado) {
       return res.stauts(401).json({
         message: "Usuario Invalido.",
@@ -135,13 +150,21 @@ export const login = async (req, res) => {
         message: "Contrasenia incorrecta.",
       });
     }
+
+    const permisos = usuarioEncontrado.rols
+      .flatMap(rol => rol.permisos || [])
+      .map(permiso => permiso.nombre);
+
+
     const token = await createAccessToken({
       idpersona: usuarioEncontrado.idpersona,
-      nombre: usuarioEncontrado.nombre,
-      apellido: usuarioEncontrado.apellido,
-      dni: usuarioEncontrado.dni,
-      permisos: usuarioEncontrado.permisos
+      nombre: usuarioEncontrado.persona.nombre,
+      apellido: usuarioEncontrado.persona.apellido,
+      correo: usuarioEncontrado.persona.correo,
+      permisos
     });
+
+    console.log(token)
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -152,9 +175,9 @@ export const login = async (req, res) => {
     return res.status(200).json({
       token,
       idpersona: usuarioEncontrado.idpersona,
-      nombre: usuarioEncontrado.nombre,
-      correo: usuarioEncontrado.correo,
-      permisos: usuarioEncontrado.permisos
+      nombre: usuarioEncontrado.persona.nombre,
+      correo: usuarioEncontrado.persona.correo,
+      permisos
     });
   } catch (error) {
     console.log("Error Login: ", error);

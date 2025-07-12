@@ -1,9 +1,10 @@
-
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import "dotenv/config";
 import { Persona } from "../models/personaModel.js";
 import { Usuario } from "../models/usuarioModel.js";
+import { Rol } from "../models/rolModel.js";
+import { Permiso } from "../models/permisoModel.js";
 
 const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
@@ -11,34 +12,53 @@ const TOKEN_SECRET = process.env.TOKEN_SECRET;
 //Probar
 export const usuario = async (req, res) => {
   try {
-    // Obtén los usuarios de la base de datos
-    const usuarios = await Usuario.findAll();
+    const usuarios = await Usuario.findAll({
+      include: [
+        {
+          model: Persona,
+          attributes: ['nombre', 'apellido', 'correo']
+        },
+        {
+          model: Rol,
+          as: 'rols',
+          include: [{
+            model: Permiso,
+            as: 'permisos',
+            attributes: ['idpermiso', 'nombre']
+          }],
+          attributes: ['idrol', 'nombrerol']
+        }
+      ],
+      attributes: ['dni', 'departamento', 'estado', 'primer_ingreso']
+    });
 
-    // Verifica si no hay usuarios
     if (!usuarios || usuarios.length === 0) {
-      return res.status(404).json({
-        message: "No users found",
-      });
+      return res.status(404).json({ message: "No se encontraron usuarios." });
     }
 
-    // Filtra y formatea los usuarios para enviar solo los datos necesarios
-    const usuariosFiltrados = usuarios.map((usuario) => ({
-      nombre: usuario.nombre,
-      apellido: usuario.apellido,
-      correo: usuario.correo,
-      dni: usuario.dni,
-      deoartamento: usuario.deoartamento,
-      roles: usuario.roles,
-      permisos: usuario.permisos,
-    }));
+    const usuariosFormateados = usuarios.map((usuario) => {
+      const permisos = usuario.rols?.flatMap(rol => rol.permisos || []).map(p => p.nombre) || [];
 
-    // Envía los usuarios filtrados como respuesta
-    return res.json(usuariosFiltrados);
+      return {
+        dni: usuario.dni,
+        departamento: usuario.departamento,
+        estado: usuario.estado,
+        primer_ingreso: usuario.primer_ingreso,
+        nombre: usuario.persona?.nombre,
+        apellido: usuario.persona?.apellido,
+        correo: usuario.persona?.correo,
+        roles: usuario.rols?.map(r => r.nombrerol),
+        permisos: [...new Set(permisos)] // elimina duplicados si hay varios roles con el mismo permiso
+      };
+    });
+
+    return res.status(200).json(usuariosFormateados);
+
   } catch (error) {
-    // Manejo de errores si algo sale mal
     console.error("Error al obtener los usuarios:", error);
     return res.status(500).json({
       message: "Error al obtener los usuarios",
+      error: error.message,
     });
   }
 };

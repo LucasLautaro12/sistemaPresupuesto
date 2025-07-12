@@ -1,6 +1,5 @@
 import sequelize from "../db.js";
 import { DataTypes } from "sequelize";
-import { Persona } from "./personaModel.js";
 
 export const Usuario = sequelize.define('usuario', {
   dni: { type: DataTypes.INTEGER, primaryKey: true },
@@ -12,7 +11,8 @@ export const Usuario = sequelize.define('usuario', {
 }, {
   tableName: 'usuario',
   timestamps: false,
-})
+});
+
 
 // Actualizar usuarioRol
 const actualizarUsuarioRol = async (dni, roles) => {
