@@ -6,16 +6,18 @@ import { createAccessToken } from "../libs/jwt.js";
 import "dotenv/config";
 import { Usuario } from "../models/usuarioModel.js";
 import { Persona } from "../models/personaModel.js";
+import { Rol } from "../models/rolModel.js";
+import sequelize from "../db.js";
+import { Permiso } from "../models/permisoModel.js";
 
 const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
 //Peticiones POST
 //Probar
 export const register = async (req, res) => {
+  const { user, roles, department, permissions } = req.body;
+  const { apellido, nombre, dni, correo, estado } = user;
   try {
-    const { user, roles, department, permissions } = req.body;
-    const { apellido, nombre, dni, correo, contrasenia1, estado } = user;
-
     // Verificamos si el usuario ya existe
     const usuarioExistente = await Usuario.findByPk(parseInt(dni));
     if (usuarioExistente) {
@@ -35,7 +37,7 @@ export const register = async (req, res) => {
     });
 
     // Encriptamos la contraseña
-    const contraseniaHash = await bcrypt.hash(contrasenia1, 10);
+    const contraseniaHash = await bcrypt.hash(String(dni), 10);
 
     // Creamos el usuario
     const nuevoUsuario = await Usuario.create({
@@ -51,32 +53,30 @@ export const register = async (req, res) => {
     const rol = await Rol.findOne({ where: { nombrerol: roles } });
     if (!rol) return res.status(404).json({ message: 'Rol no encontrado' });
 
-    await Usuariorol.create({
-      dni,
-      idrol: rol.idrol
-    });
+    await sequelize.query(
+      'INSERT INTO usuariorol (dni, idrol) VALUES (:dni, :idrol)',
+      { replacements: { dni, idrol: rol.idrol } }
+    );
 
     // Si hay permisos, los asociamos (opcional)
-    if (permissions && permissions.length > 0) {
-      for (const permisoNombre of permissions) {
-        const permiso = await Permiso.findOne({ where: { nombre: permisoNombre } });
-        if (permiso) {
-          await Usuariopermiso.create({
-            dni,
-            idpermiso: permiso.idpermiso
-          });
-        }
+    if (Array.isArray(permissions) && permissions.length > 0) {
+      const permisos = await Permiso.findAll({ where: { nombre: permisoNombre } });
+      for (const permiso of permisos){
+        await sequelize.query(
+          'INSERT INTO rolpermiso(idrol, idpermiso) INTO (:idrol, :idpermiso)',
+          { replacements: {idrol: rol.idrol, idpermiso: permiso.idpermiso}}
+        )
       }
     }
 
     // Generamos token
     const token = await createAccessToken({
-      idpersona: nuevoUsuario.idpersona
+      idpersona
     });
 
     res.json({
       idpersona,
-      dni: nuevoUsuario.dni,
+      dni,
       correo: correo || '',
       token
     });
@@ -123,13 +123,13 @@ export const login = async (req, res) => {
       dni: usuarioEncontrado.dni,
       permisos: usuarioEncontrado.permisos
     });
-    
+
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
       sameSite: "None",
     });
-    
+
     return res.status(200).json({
       token,
       idpersona: usuarioEncontrado.idpersona,

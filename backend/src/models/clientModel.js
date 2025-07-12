@@ -4,11 +4,11 @@ import sequelize from "../db.js";
 import { getMaxId } from "./presupuestoModel.js";
 
 
-export const Cliente = sequelize.define('clietne',{
+export const Cliente = sequelize.define('clietne', {
   celular: {
     type: DataTypes.INTEGER, primaryKey: true
   },
-},{tableName: 'cliente', timestamps: false})
+}, { tableName: 'cliente', timestamps: false })
 
 //Obtener Cliente
 export const getClienteByCelular = async (celular) => {

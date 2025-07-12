@@ -14,11 +14,6 @@ export const Usuario = sequelize.define('usuario', {
   timestamps: false,
 })
 
-Usuario.belongsTo(Persona, { foreignKey: 'idpersona', onDelete: 'CASCADE' });
-Persona.hasOne(Usuario, { foreignKey: 'idpersona', })
-
-
-
 // Actualizar usuarioRol
 const actualizarUsuarioRol = async (dni, roles) => {
   console.log(roles)

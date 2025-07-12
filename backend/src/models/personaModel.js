@@ -7,7 +7,7 @@ export const Persona = sequelize.define('persona', {
   apellido: DataTypes.STRING,
   nombre: DataTypes.STRING,
   correo: DataTypes.STRING,
-},{
+}, {
   tableName: 'persona',
   timestamps: false,
 });
