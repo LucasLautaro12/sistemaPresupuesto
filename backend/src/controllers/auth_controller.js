@@ -1,13 +1,12 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import sequelize from "../db.js";
+import "dotenv/config";
 /* import { TOKEN_SECRET } from "../config.js"; */
 import { createAccessToken } from "../libs/jwt.js";
-
-import "dotenv/config";
 import { Usuario } from "../models/usuarioModel.js";
 import { Persona } from "../models/personaModel.js";
 import { Rol } from "../models/rolModel.js";
-import sequelize from "../db.js";
 import { Permiso } from "../models/permisoModel.js";
 
 const TOKEN_SECRET = process.env.TOKEN_SECRET;
@@ -60,10 +59,12 @@ export const register = async (req, res) => {
 
     // Si hay permisos, los asociamos (opcional)
     if (Array.isArray(permissions) && permissions.length > 0) {
-      const permisos = await Permiso.findAll({ where: { nombre: permisoNombre } });
+      const permisos = await Permiso.findAll({
+        where: { nombre: permissions }
+      });
       for (const permiso of permisos){
         await sequelize.query(
-          'INSERT INTO rolpermiso(idrol, idpermiso) INTO (:idrol, :idpermiso)',
+          'INSERT INTO rolpermiso (idrol, idpermiso) VALUES (:idrol, :idpermiso)',
           { replacements: {idrol: rol.idrol, idpermiso: permiso.idpermiso}}
         )
       }

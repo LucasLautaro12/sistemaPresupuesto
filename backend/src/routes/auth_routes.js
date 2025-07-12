@@ -12,7 +12,7 @@ import { verificarPermiso } from "../middlewares/verificarPermiso.js";
 const router = Router();
 
 // Desarrollo listo
-router.post("/register", /* auth, verificarPermiso(["ADMIN","CREAR_USER"]), */ register);
+router.post("/register", auth, verificarPermiso(["ADMIN","CREAR_USER"]), register);
 
 // Desarrollo listo
 router.post("/login", login);
