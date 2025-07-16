@@ -18,7 +18,6 @@ export const handleDeactivateUser = (dni, setSelectedUserDni, setShowConfirmatio
   setShowConfirmation(true); // Mostrar la confirmación
 };
 
-// handleConfirmDeactivate.js
 export const handleConfirmDeactivate = async (
   selectedUserDni,
   password,
@@ -27,6 +26,7 @@ export const handleConfirmDeactivate = async (
   fetchUsuarios
 ) => {
   try {
+    console.log('DNI: ',selectedUserDni,' PASS: ',password)
     if (!selectedUserDni || !password) return; // Validar que no falten datos
 
     const response = await axios.put(
@@ -37,7 +37,8 @@ export const handleConfirmDeactivate = async (
         contrasenia: password, // Contraseña para autenticar la desactivación
       },
       {
-        withCredentials: true, // Asegurar que las cookies se envíen
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
       }
     );
 

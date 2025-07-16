@@ -7,7 +7,7 @@ import {
   handleConfirmDeactivate,
   handleDeactivateUser,
 } from "../../api/fetchUsuarios";
-//comentario
+
 interface Usuario {
   apellido: string;
   nombre: string;
@@ -28,7 +28,6 @@ const UsuarioTable: React.FC = () => {
   useEffect(() => {
     fetchUsuarios(setUsuarios);
   }, []);
-  // Mostrar formulario de confirmación
 
   const normalizeText = (text: string) =>
     text
@@ -36,19 +35,18 @@ const UsuarioTable: React.FC = () => {
       .replace(/\p{Diacritic}/gu, "")
       .toLowerCase();
 
-  const filteredUsuarios = usuarios.filter(
-    (usuario) =>
-      normalizeText(usuario.apellido).includes(normalizeText(searchTerm)) ||
-      normalizeText(usuario.nombre).includes(normalizeText(searchTerm)) ||
-      usuario.dni.toString().includes(searchTerm) ||
-      normalizeText(usuario.roles.join(" ")).includes(normalizeText(searchTerm))
+  const filteredUsuarios = usuarios.filter((usuario) =>
+    normalizeText(usuario.apellido).includes(normalizeText(searchTerm)) ||
+    normalizeText(usuario.nombre).includes(normalizeText(searchTerm)) ||
+    usuario.dni.toString().includes(searchTerm) ||
+    normalizeText(usuario.roles.join(" ")).includes(normalizeText(searchTerm))
   );
-      
 
-  //Funcion para editar el usuario
   const handleEditUser = (usuario: Usuario) => {
     setEditingUser(usuario);
   };
+
+  const selectedUser = usuarios.find((u) => u.dni === selectedUserDni);
 
   return (
     <div
@@ -65,12 +63,9 @@ const UsuarioTable: React.FC = () => {
                 user.dni === updatedUser.dni ? updatedUser : user
               )
             );
-            setEditingUser(null); // Salir del modo de edición
+            setEditingUser(null);
           }}
-          onCancel={() => {
-            console.log("Cancelar presionado"); // Verifica que esto se muestra en la consola
-            setEditingUser(null); // Salir del modo de edición
-          }}
+          onCancel={() => setEditingUser(null)}
         />
       ) : (
         <div>
@@ -84,61 +79,67 @@ const UsuarioTable: React.FC = () => {
           </div>
 
           <div className="table-wrapper">
-      <table className="data-table">
-        <thead>
-          <tr className="table-header">
-            <th>Apellido</th>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>DNI</th>
-            <th>Rol</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody className="table-body">
-          {filteredUsuarios.map(( usuario, index) => (
-            <tr key={`${usuario.dni}-${index}`}>
-              <td>{usuario.apellido}</td>
-              <td>{usuario.nombre}</td>
-              <td>{usuario.correo}</td>
-              <td>{usuario.dni}</td>
-              <td>{usuario.roles.map((rol, index) => (
-                <div key={index} className="rol-item">
-                {rol}
-              </div>
-              ))}</td>
-              <td>
-                <button className="edit-btn" onClick={() => handleEditUser(usuario)}>✏️</button>
-                <button className="delete-btn" onClick={() =>
-                            handleDeactivateUser(
-                              usuario.dni,
-                              setSelectedUserDni,
-                              setShowConfirmation
-                            )}>🗑️</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-
+            <table className="data-table">
+              <thead>
+                <tr className="table-header">
+                  <th>Apellido</th>
+                  <th>Nombre</th>
+                  <th>Correo</th>
+                  <th>DNI</th>
+                  <th>Rol</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="table-body">
+                {filteredUsuarios.map((usuario) => (
+                  <tr key={usuario.dni}>
+                    <td>{usuario.apellido}</td>
+                    <td>{usuario.nombre}</td>
+                    <td>{usuario.correo}</td>
+                    <td>{usuario.dni}</td>
+                    <td>
+                      <ul className="rol-list">
+                        {usuario.roles.map((rol, index) => (
+                          <li key={index} className="rol-item">
+                            {rol}
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td>
+                      <button
+                        className="edit-btn"
+                        onClick={() => handleEditUser(usuario)}
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        className="delete-btn"
+                        onClick={() =>
+                          handleDeactivateUser(
+                            usuario.dni,
+                            setSelectedUserDni,
+                            setShowConfirmation
+                          )
+                        }
+                      >
+                        🗑️
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
-      {showConfirmation && (
+      {showConfirmation && selectedUser && (
         <div className="confirmation-modal">
           <h3>Confirma con tu contraseña</h3>
           <h4>
             ¿Estás seguro de querer eliminar al usuario{" "}
-            {
-              usuarios.find((usuario) => usuario.dni === selectedUserDni)
-                ?.nombre
-            }{" "}
-            {
-              usuarios.find((usuario) => usuario.dni === selectedUserDni)
-                ?.apellido
-            }
-            ?
+            {selectedUser.nombre} {selectedUser.apellido}?
           </h4>
           <input
             type="password"
@@ -147,7 +148,20 @@ const UsuarioTable: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="new-password"
           />
-          <button onClick={handleConfirmDeactivate}>Confirmar</button>
+          <button
+            onClick={() =>
+              handleConfirmDeactivate(
+                selectedUserDni,
+                password,
+                setShowConfirmation,
+                setPassword,
+                fetchUsuarios
+              )
+            }
+            disabled={!password.trim()}
+          >
+            Confirmar
+          </button>
           <button onClick={() => setShowConfirmation(false)}>Cancelar</button>
         </div>
       )}

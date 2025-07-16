@@ -66,37 +66,41 @@ export const usuario = async (req, res) => {
 // Petición PUT
 //Probar
 export const usuarioInactive = async (req, res) => {
+  console.log('hoola', req.body);
   try {
-    // Extraer el token desde las cookies
     const token = req.cookies?.token;
 
     if (!token) {
       return res.status(401).json({ message: "Token no proporcionado." });
     }
 
-    // Verificar el token
     const decode = jwt.verify(token, TOKEN_SECRET);
-
     const { dni, estado, contrasenia } = req.body;
-
     const idpersona = decode.idpersona;
 
-    // Obtener la contraseña hasheada asociada al usuario
-    const contraseniaHash = await Persona.findAll(idpersona);
+    const persona = await Persona.findByPk(idpersona, {
+      include: [{
+        model: Usuario,
+        attributes: ['contrasenia']
+      }]
+    });
 
-    // Verificar que la contraseña proporcionada coincida con el hash
-    const coincide = bcrypt.compare(contrasenia, contraseniaHash);
+    if (!persona) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    const coincide = await bcrypt.compare(contrasenia, persona.usuario.contrasenia);
+
+    console.log(coincide)
+
     if (!coincide) {
       return res.status(403).json({ message: "Contraseña incorrecta." });
     }
 
-    // Cambiar el estado del usuario
-    const usuarios = await Usuario.update(
+    await Usuario.update(
       { estado },
       {
-        where: {
-          dni
-        }
+        where: { dni }
       }
     );
 
@@ -104,13 +108,13 @@ export const usuarioInactive = async (req, res) => {
       .status(200)
       .json({ message: "Estado del usuario actualizado exitosamente." });
   } catch (error) {
-    // Manejo de errores si algo sale mal
     console.error("Error al procesar la solicitud:", error);
     return res.status(500).json({
       message: "Error al procesar la solicitud.",
     });
   }
 };
+
 
 //Peticion GET
 //Probar
