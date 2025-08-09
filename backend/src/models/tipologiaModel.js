@@ -1,5 +1,12 @@
 //import { getPool } from '../db.js'
 
+import { DataTypes } from "sequelize";
+import sequelize from "../db.js";
+
+export const Tipologia = sequelize.define('tipologia',{
+    idtipologia: {type: DataTypes.INTEGER, primaryKey: true}
+},{tableName:'tipologia', timestamps:false});
+
 class Tipologia {
     constructor(idtipologia, tipologia) {
         this.idtipologia = idtipologia;

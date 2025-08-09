@@ -3,8 +3,8 @@ import { Cliente } from "../models/clientModel.js";
 import { Persona } from "../models/personaModel.js";
 import { Presupuesto } from "../models/presupuestoModel.js";
 import { Usuario } from "../models/usuarioModel.js";
-import Tipologia from "../models/tipologiaModel.js";
-import Linea from "../models/lineaModel.js";
+import {Tipologia} from "../models/tipologiaModel.js";
+import {Linea} from "../models/lineaModel.js";
 
 export async function getAllPresupuestos() {
   const query = await Persona.findAll({

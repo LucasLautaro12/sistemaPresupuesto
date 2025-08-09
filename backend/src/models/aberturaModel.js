@@ -21,7 +21,23 @@ export const Abertura = sequelize.define('abertura', {
   estado: DataTypes.BOOLEAN,
 }, { tableName: 'abertura', timestamps: false });
 
+Abertura.belongsToMany(Presupuesto, {
+  through: 'presupuestoabertura',
+  foreignKey: 'numpresupuesto',
+  otherKey: 'idabertura',
+  onDelete: 'SET NULL',
+  onUpdate: 'CASCADE',
+  timestamps: false
+});
 
+Presupuesto.belongsToMany(Abertura, {
+  through: 'presupuestoabertura',
+  foreignKey: 'idabertura',
+  otherKey: 'numpresupuesto',
+  onDelete: 'SET NULL',
+  onUpdate: 'CASCADE',
+  timestamps: false
+});
 
 export const saveAbertura = async (aberturas, numpresupuesto) => {
   const pool = getPool();
