@@ -2,7 +2,6 @@ import sequelize from "../db.js";
 import { DataTypes } from "sequelize";
 import { Usuario } from "./usuarioModel.js";
 
-
 export const Rol = sequelize.define('rol', {
     idrol: { type: DataTypes.INTEGER, primaryKey: true },
     nombrerol: DataTypes.STRING,
@@ -17,7 +16,7 @@ Usuario.belongsToMany(Rol, {
     timestamps: false
   });
   
-  Rol.belongsToMany(Usuario, {
+Rol.belongsToMany(Usuario, {
     through: 'usuariorol',
     foreignKey: 'idrol',
     otherKey: 'dni',

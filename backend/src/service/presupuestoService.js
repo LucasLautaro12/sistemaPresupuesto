@@ -1,8 +1,52 @@
-//import { getPool } from "../db.js";
+import { Abertura } from "../models/aberturaModel.js";
+import { Cliente } from "../models/clientModel.js";
+import { Persona } from "../models/personaModel.js";
+import { Presupuesto } from "../models/presupuestoModel.js";
+import { Usuario } from "../models/usuarioModel.js";
+import Tipologia from "../models/tipologiaModel.js";
+import Linea from "../models/lineaModel.js";
 
 export async function getAllPresupuestos() {
-  const pool = getPool();
-  const query = `
+  const query = await Persona.findAll({
+    attributes: ['nombre', 'apellido', 'correo',],
+    include: [{
+      model: Cliente,
+      attributes: ['celular'],
+      include: [{
+        model: Presupuesto,
+        attributes: ['numpresupuesto', 'fechainicio', 'urgencia', 'oktecnico',
+          'monto', 'montocerrado', 'estado', 'fechaganada', 'nota', 'direccion', 'numticket'
+        ],
+        include: [{
+          model: Abertura,
+          attributes: [
+            'idabertura', 'nombreabertura', 'ancho', 'alto', 'cantidad', 'mosquitero',
+            'acoplamiento', 'detalle', 'tipovidrio'
+          ],
+          include: [
+            { model: Tipologia, attributes: ['tipologia'] },
+            { model: Linea, attributes: ['tipolinea', 'color'] }
+          ]
+        },
+        {
+          model: Abertura,
+          through: { attributes: [] },
+          attributes: ['idarchivo', 'url', 'nombreoriginal']
+        },
+        {
+          model: Usuario,
+          attributes: ['dni', 'responsable'],
+          include: [
+            { model: Persona, attributes: ['nombre', 'apellido'] }
+          ]
+        }
+        ]
+      }]
+    }]
+  })
+
+
+  /* `
                 SELECT 
                     pers.nombre, pers.apellido, pers.correo, c.celular, 
                     pres.numpresupuesto, pres.fechainicio, pres.urgencia, 
@@ -27,10 +71,9 @@ export async function getAllPresupuestos() {
                 LEFT JOIN usuariopresupuesto up ON up.numpresupuesto = pres.numpresupuesto 
                 LEFT JOIN usuario u_res ON up.dni = u_res.dni  
                 LEFT JOIN persona p_res ON u_res.idpersona = p_res.idpersona  
-                ORDER BY pres.numpresupuesto DESC;`;
+                ORDER BY pres.numpresupuesto DESC;` */;
 
-  const { rows } = await pool.query(query);
-  return rows;
+  return query;
 }
 
 export async function transformResult() {

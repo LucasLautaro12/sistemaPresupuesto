@@ -1,6 +1,7 @@
 //import { getPool } from "../db.js"; //Exporto la conexion de la bd
 import sequelize from "../db.js";
 import { DataTypes } from "sequelize";
+import { Cliente } from "./clientModel.js";
 
 export const Presupuesto = sequelize.define('presupuesto', {
   numpresupuesto: { type: DataTypes.INTEGER, primaryKey: true },
@@ -13,6 +14,8 @@ export const Presupuesto = sequelize.define('presupuesto', {
   direccion: DataTypes.STRING
 }, { tableName: 'presupuesto', timestamps: false }
 );
+
+
 
 //Obtener el numero maximo de presupuesto
 export const getMaxId = async (id, tabla) => {

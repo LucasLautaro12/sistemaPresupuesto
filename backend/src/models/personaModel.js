@@ -2,6 +2,7 @@
 import sequelize from "../db.js";
 import { DataTypes } from "sequelize";
 import { Usuario } from "./usuarioModel.js";
+import { Cliente } from "./clientModel.js";
 
 export const Persona = sequelize.define('persona', {
   idpersona: { type: DataTypes.INTEGER, primaryKey: true },
@@ -19,5 +20,16 @@ Usuario.belongsTo(Persona, {
 });
 
 Persona.hasOne(Usuario, {
-  foreignKey: 'idpersona'
+  foreignKey: 'idpersona',
+  onDelete: 'CASCADE'
+});
+
+Cliente.belongsTo(Persona, {
+  foreignKey: 'idpersona',
+  onDelete: 'CASCADE'
+});
+
+Persona.hasOne(Cliente, {
+  foreignKey: 'celular',
+  onDelete: 'CASCADE'
 });

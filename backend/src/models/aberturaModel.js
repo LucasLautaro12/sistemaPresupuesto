@@ -1,33 +1,27 @@
 //import { getPool } from "../db.js";
-import { getMaxId } from "./presupuestoModel.js";
+import { getMaxId, Presupuesto } from "./presupuestoModel.js";
 import { getLineaByTipolinea } from "../models/lineaModel.js";
 import { getTipologiaByNombre } from "./tipologiaModel.js";
+import sequelize from "../db.js";
+import { DataTypes } from "sequelize";
 
-//Clase Abertura
-class Abertura {
-  constructor(
-    idabertura,
-    nombreabertura,
-    ancho,
-    alto,
-    detalle,
-    cantidad,
-    mosquitero,
-    acoplamiento,
-    tipovidrio
-  ) {
-    this.idabertura = idabertura;
-    this.nombreabertura = nombreabertura;
-    this.ancho = ancho;
-    this.alto = alto;
-    this.detalle = detalle;
-    this.cantidad = cantidad;
-    this.mosquitero = mosquitero;
-    this.acoplamiento = acoplamiento;
-    this.tipovidrio = tipovidrio;
-  }
-}
-export default Abertura;
+export const Abertura = sequelize.define('abertura', {
+  idabertura: { type: DataTypes.INTEGER, primaryKey: true },
+  nombreabertura: DataTypes.STRING,
+  ancho: DataTypes.INTEGER,
+  alto: DataTypes.INTEGER,
+  detalle: DataTypes.TEXT,
+  cantidad: DataTypes.INTEGER,
+  mosquitero: DataTypes.BOOLEAN,
+  acoplamiento: DataTypes.BOOLEAN,
+  numpresupuesto: DataTypes.INTEGER,
+  idlinea: DataTypes.INTEGER,
+  idtipologia: DataTypes.INTEGER,
+  tipovidrio: DataTypes.STRING,
+  estado: DataTypes.BOOLEAN,
+}, { tableName: 'abertura', timestamps: false });
+
+
 
 export const saveAbertura = async (aberturas, numpresupuesto) => {
   const pool = getPool();
@@ -46,9 +40,9 @@ export const saveAbertura = async (aberturas, numpresupuesto) => {
         const idlinea =
           abertura.linea && abertura.color
             ? await getLineaByTipolinea(
-                abertura.linea.toUpperCase(),
-                abertura.color.toUpperCase()
-              )
+              abertura.linea.toUpperCase(),
+              abertura.color.toUpperCase()
+            )
             : 0;
 
         const idtipologia = abertura.tipologia
@@ -123,7 +117,7 @@ export const updateAbertura = async (abertura, idtipologia, idlinea) => {
   `;
 
   try {
-    await pool.query(queryAbert,[
+    await pool.query(queryAbert, [
       abertura.idabertura,
       abertura.nombreabertura,
       abertura.ancho,
@@ -137,9 +131,9 @@ export const updateAbertura = async (abertura, idtipologia, idlinea) => {
       idtipologia
     ])
 
-    return {message: "Abertura modificada"}
+    return { message: "Abertura modificada" }
   } catch (error) {
     console.log("Error en: ", error);
-        throw error;
+    throw error;
   }
 };

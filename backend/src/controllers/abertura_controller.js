@@ -1,7 +1,7 @@
-import Abertura, {
+/* import Abertura, {
   saveAbertura,
   updateAbertura,
-} from "../models/aberturaModel.js";
+} from "../models/aberturaModel.js"; */
 import { getLineaByTipolinea } from "../models/lineaModel.js";
 import { getTipologiaByNombre } from "../models/tipologiaModel.js";
 
