@@ -1,7 +1,7 @@
 //import { getPool } from "../db.js";
 import { getMaxId, Presupuesto } from "./presupuestoModel.js";
-import { getLineaByTipolinea } from "../models/lineaModel.js";
-import { getTipologiaByNombre } from "./tipologiaModel.js";
+import { getLineaByTipolinea, Linea } from "../models/lineaModel.js";
+import { getTipologiaByNombre, Tipologia } from "./tipologiaModel.js";
 import sequelize from "../db.js";
 import { DataTypes } from "sequelize";
 
@@ -21,22 +21,36 @@ export const Abertura = sequelize.define('abertura', {
   estado: DataTypes.BOOLEAN,
 }, { tableName: 'abertura', timestamps: false });
 
-Abertura.belongsToMany(Presupuesto, {
-  through: 'presupuestoabertura',
-  foreignKey: 'numpresupuesto',
-  otherKey: 'idabertura',
-  onDelete: 'SET NULL',
+Abertura.hasMany(Presupuesto, {
+  foreignKey: 'idabertura',
   onUpdate: 'CASCADE',
   timestamps: false
 });
 
-Presupuesto.belongsToMany(Abertura, {
-  through: 'presupuestoabertura',
+Presupuesto.hasOne(Abertura, {
   foreignKey: 'idabertura',
-  otherKey: 'numpresupuesto',
-  onDelete: 'SET NULL',
   onUpdate: 'CASCADE',
   timestamps: false
+});
+
+Linea.belongsTo(Abertura, {
+  foreignKey: 'idlinea',
+  onDelete: 'CASCADE'
+});
+
+Abertura.hasOne(Linea, {
+  foreignKey: 'idlinea',
+  onDelete: 'CASCADE'
+});
+
+Tipologia.belongsTo(Abertura, {
+  foreignKey: 'idtipologia',
+  onDelete: 'CASCADE'
+});
+
+Abertura.hasOne(Tipologia, {
+  foreignKey: 'idtipologia',
+  onDelete: 'CASCADE'
 });
 
 export const saveAbertura = async (aberturas, numpresupuesto) => {

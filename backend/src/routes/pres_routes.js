@@ -21,7 +21,7 @@ const upload = multer({ dest: "uploads/" });
 const router = Router();
 
 // Desarrollo listo
-router.get("/presupuesto", auth, verificarPermiso(["ADMIN", "LEER_PM_PRES"]), presupuesto);
+router.get("/presupuesto", /* auth, verificarPermiso(["ADMIN", "LEER_PM_PRES"]), */ presupuesto);
 
 // Desarrollo listo
 router.post("/formpresupuesto", auth, verificarPermiso(["ADMIN", "CREAR_PRES"]), upload.array("archivos"), formpresupuesto);

@@ -3,18 +3,11 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../db.js";
 
-export const Tipologia = sequelize.define('tipologia',{
-    idtipologia: {type: DataTypes.INTEGER, primaryKey: true}
-},{tableName:'tipologia', timestamps:false});
+export const Tipologia = sequelize.define('tipologia', {
+    idtipologia: { type: DataTypes.INTEGER, primaryKey: true },
+    nombretipologia: DataTypes.STRING,
+}, { tableName: 'tipologia', timestamps: false });
 
-class Tipologia {
-    constructor(idtipologia, tipologia) {
-        this.idtipologia = idtipologia;
-        this.tipologia = tipologia;
-    }
-}
-
-export default Tipologia;
 
 export const getTipologiaByNombre = async (nombretipologia) => {
     const pool = getPool()
@@ -27,7 +20,7 @@ export const getTipologiaByNombre = async (nombretipologia) => {
     try {
         const result = await pool.query(query, [nombretipologia]);
 
-        if(result.rows.length === 0){
+        if (result.rows.length === 0) {
             throw new Error("Tipologia no encontrado...")
         }
 

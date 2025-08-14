@@ -1,15 +1,18 @@
 //import { getPool } from '../db.js'
 
-//Clase Vidrio
-class Linea {
-    constructor(idlinea, tipolinea, color) {
-        this.idlinea = idlinea;
-        this.tipolinea = tipolinea;
-        this.color = color;
-    };
-};
+import { DataTypes } from "sequelize";
+import sequelize from "../db.js";
 
-export default Linea;
+export const Linea = sequelize.define('linea', {
+    idlinea: { type: DataTypes.INTEGER, primaryKey: true },
+    tipolinea: DataTypes.STRING,
+    color: DataTypes.STRING
+}, {
+    tableName: 'linea',
+    timestamps: false
+});
+
+
 
 //Obtener Datos Vidrio
 export const getLineaByTipolinea = async (tipolinea, color) => {
@@ -27,7 +30,7 @@ export const getLineaByTipolinea = async (tipolinea, color) => {
             throw new Error("Linea no encontrada...");
         }
 
-        return  result.rows[0].idlinea;
+        return result.rows[0].idlinea;
     } catch (error) {
         console.log("Error en: ", error);
         throw error;

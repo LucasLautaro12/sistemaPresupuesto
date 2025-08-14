@@ -3,47 +3,56 @@ import { Cliente } from "../models/clientModel.js";
 import { Persona } from "../models/personaModel.js";
 import { Presupuesto } from "../models/presupuestoModel.js";
 import { Usuario } from "../models/usuarioModel.js";
-import {Tipologia} from "../models/tipologiaModel.js";
-import {Linea} from "../models/lineaModel.js";
+import { Tipologia } from "../models/tipologiaModel.js";
+import { Linea } from "../models/lineaModel.js";
+import { Archivo } from "../models/archivoModel.js";
+import { UsuarioPresupuesto } from "../models/usuariopresupuesto.js";
 
 export async function getAllPresupuestos() {
   const query = await Persona.findAll({
-    attributes: ['nombre', 'apellido', 'correo',],
+    attributes: ['nombre', 'apellido', 'correo'],
     include: [{
       model: Cliente,
       attributes: ['celular'],
+      required: false,
       include: [{
         model: Presupuesto,
-        attributes: ['numpresupuesto', 'fechainicio', 'urgencia', 'oktecnico',
+        attributes: [
+          'numpresupuesto', 'fechainicio', 'urgencia', 'oktecnico',
           'monto', 'montocerrado', 'estado', 'fechaganada', 'nota', 'direccion', 'numticket'
         ],
-        include: [{
-          model: Abertura,
-          attributes: [
-            'idabertura', 'nombreabertura', 'ancho', 'alto', 'cantidad', 'mosquitero',
-            'acoplamiento', 'detalle', 'tipovidrio'
-          ],
-          include: [
-            { model: Tipologia, attributes: ['tipologia'] },
-            { model: Linea, attributes: ['tipolinea', 'color'] }
-          ]
-        },
-        {
-          model: Abertura,
-          through: { attributes: [] },
-          attributes: ['idarchivo', 'url', 'nombreoriginal']
-        },
-        {
-          model: Usuario,
-          attributes: ['dni', 'responsable'],
-          include: [
-            { model: Persona, attributes: ['nombre', 'apellido'] }
-          ]
-        }
+        include: [
+          {
+            model: Abertura,
+            attributes: [
+              'idabertura', 'nombreabertura', 'ancho', 'alto', 'cantidad', 'mosquitero',
+              'acoplamiento', 'detalle', 'tipovidrio'
+            ],
+            required: false,
+            include: [
+              { model: Tipologia, attributes: ['nombretipologia'], required: false, },
+              { model: Linea, attributes: ['tipolinea', 'color'], required: false, }
+            ]
+          },
+          {
+            model: Archivo, // si esta es la tabla de archivos
+            attributes: ['idarchivo', 'url', 'nombreoriginal'],
+            required: false,
+          },
+          {
+            model: Usuario,
+            attributes: ['dni'],
+            required: false,
+            through: { model: UsuarioPresupuesto, attributes: ['responsable'], required: false },
+            
+            include: [
+              { model: Persona, attributes: ['nombre', 'apellido'], required: false }
+            ]
+          }
         ]
       }]
     }]
-  })
+  });
 
 
   /* `

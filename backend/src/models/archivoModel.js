@@ -1,26 +1,21 @@
 //import { getPool } from "../db.js";
 //import cloudinary from 'cloudinary';
 import { v2 as cloudinary } from 'cloudinary';
+import sequelize from '../db.js';
+import { DataTypes } from 'sequelize';
 
-class Archivo {
-  constructor(
-    idarchivo,
-    url,
-    nombreoriginal,
-    tipoarchivo,
-    fechasubida,
-    numpresupuesto
-  ) {
-    this.idarchivo = idarchivo;
-    this.url = url;
-    this.nombreoriginal = nombreoriginal;
-    this.tipoarchivo = tipoarchivo;
-    this.fechasubida = fechasubida;
-    this.numpresupuesto = numpresupuesto;
-  }
-}
+export const Archivo = sequelize.define('archivo',{
+  idarchivo: {type: DataTypes.INTEGER, primaryKey: true},
+  url: DataTypes.STRING,
+  nombreoriginal: DataTypes.STRING,
+  tipoarchivo: DataTypes.STRING,
+  fechasubida: DataTypes.DATE
+},{
+  tableName: 'archivo',
+  timestamps: false
+});
 
-export default Archivo;
+
 
 //Guardar Archivos
 export const saveArchivos = async (numpresupuesto, archivos) => {

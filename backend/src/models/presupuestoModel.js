@@ -2,6 +2,8 @@
 import sequelize from "../db.js";
 import { DataTypes } from "sequelize";
 import { Cliente } from "./clientModel.js";
+import { Usuario } from "./usuarioModel.js";
+import { Archivo } from "./archivoModel.js";
 
 export const Presupuesto = sequelize.define('presupuesto', {
   numpresupuesto: { type: DataTypes.INTEGER, primaryKey: true },
@@ -12,10 +14,46 @@ export const Presupuesto = sequelize.define('presupuesto', {
   estado: DataTypes.STRING,
   fechaganada: DataTypes.DATE,
   direccion: DataTypes.STRING
-}, { tableName: 'presupuesto', timestamps: false }
-);
+}, {
+  tableName: 'presupuesto', 
+  timestamps: false
+});
 
+Usuario.belongsToMany(Presupuesto, {
+  through: 'usuariopresupuesto',
+  foreignKey: 'numpresupuesto',
+  otherKey: 'dni',
+  onDelete: 'SET NULL',
+  onUpdate: 'CASCADE',
+  timestamps: false
+});
 
+Presupuesto.belongsToMany(Usuario, {
+  through: 'usuariopresupuesto',
+  foreignKey: 'dni',
+  otherKey: 'numpresupuesto',
+  onDelete: 'SET NULL',
+  onUpdate: 'CASCADE',
+  timestamps: false
+});
+
+Archivo.belongsToMany(Presupuesto, {
+  through: 'archivopresupuesto',
+  foreignKey: 'numpresupuesto',
+  otherKey: 'idarchivo',
+  onDelete: 'SET NULL',
+  onUpdate: 'CASCADE',
+  timestamps: false
+});
+
+Presupuesto.belongsToMany(Archivo, {
+  through: 'archivopresupuesto',
+  foreignKey: 'idarchivo',
+  otherKey: 'numpresupuesto',
+  onDelete: 'SET NULL',
+  onUpdate: 'CASCADE',
+  timestamps: false
+});
 
 //Obtener el numero maximo de presupuesto
 export const getMaxId = async (id, tabla) => {
