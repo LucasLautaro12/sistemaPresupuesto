@@ -121,7 +121,8 @@ export const login = async (req, res) => {
       include: [
         {
           model: Persona,
-          attributes: ['nombre', 'apellido', 'correo']
+          attributes: ['nombre', 'apellido', 'correo'],
+          as: 'Persona'
         },
         {
           model: Rol,
@@ -158,9 +159,9 @@ export const login = async (req, res) => {
 
     const token = await createAccessToken({
       idpersona: usuarioEncontrado.idpersona,
-      nombre: usuarioEncontrado.persona.nombre,
-      apellido: usuarioEncontrado.persona.apellido,
-      correo: usuarioEncontrado.persona.correo,
+      nombre: usuarioEncontrado.nombre,
+      apellido: usuarioEncontrado.apellido,
+      correo: usuarioEncontrado.correo,
       permisos
     });
 
@@ -175,8 +176,8 @@ export const login = async (req, res) => {
     return res.status(200).json({
       token,
       idpersona: usuarioEncontrado.idpersona,
-      nombre: usuarioEncontrado.persona.nombre,
-      correo: usuarioEncontrado.persona.correo,
+      nombre: usuarioEncontrado.nombre,
+      correo: usuarioEncontrado.correo,
       permisos
     });
   } catch (error) {

@@ -16,7 +16,8 @@ export const usuario = async (req, res) => {
       include: [
         {
           model: Persona,
-          attributes: ['nombre', 'apellido', 'correo']
+          attributes: ['nombre', 'apellido', 'correo'],
+          as: 'Persona'
         },
         {
           model: Rol,
