@@ -54,121 +54,130 @@ export async function getAllPresupuestos() {
     }]
   });
 
-
-  /* `
-                SELECT 
-                    pers.nombre, pers.apellido, pers.correo, c.celular, 
-                    pres.numpresupuesto, pres.fechainicio, pres.urgencia, 
-                    pres.oktecnico, pres.monto, pres.montocerrado, pres.estado, 
-                    pres.fechaganada, pres.nota, pres.direccion, pres.numticket,
-                    a.idabertura, a.nombreabertura, a.ancho, a.alto, a.cantidad, 
-                    a.mosquitero, a.acoplamiento, a.detalle, a.tipovidrio, 
-                    l.tipolinea, l.color, t.nombretipologia, 
-                    ar.idarchivo, ar.url, ar.nombreoriginal, 
-                    up.dni AS responsable_dni, up.responsable AS responsable_tipo,
-                    p_res.nombre AS responsable_nombre, p_res.apellido AS responsable_apellido
-                FROM persona pers 
-                JOIN cliente c ON pers.idpersona = c.idpersona
-                JOIN clientepresupuesto cp ON cp.celular = c.celular
-                JOIN presupuesto pres ON pres.numpresupuesto = cp.numpresupuesto
-                LEFT JOIN abertura a ON a.numpresupuesto = pres.numpresupuesto
-                LEFT JOIN tipologia t ON t.idtipologia = a.idtipologia
-                LEFT JOIN linea l ON l.idlinea = a.idlinea
-                LEFT JOIN archivopresupuesto ap ON ap.numpresupuesto = pres.numpresupuesto 
-                LEFT JOIN archivo ar ON ar.idarchivo = ap.idarchivo 
-                LEFT JOIN usuario u ON u.idpersona = pers.idpersona
-                LEFT JOIN usuariopresupuesto up ON up.numpresupuesto = pres.numpresupuesto 
-                LEFT JOIN usuario u_res ON up.dni = u_res.dni  
-                LEFT JOIN persona p_res ON u_res.idpersona = p_res.idpersona  
-                ORDER BY pres.numpresupuesto DESC;` */;
-
   return query;
 }
 
 export async function transformResult() {
-  const result = await getAllPresupuestos();
+  const personas = await getAllPresupuestos();
   const presupuestosMap = new Map();
 
-  result.forEach((row) => {
-    const numPresupuesto = row.numpresupuesto;
+  const formatDate = (date) => {
+    if (!date) return "";
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = (d.getMonth() + 1).toString().padStart(2, "0");
+    const day = d.getDate().toString().padStart(2, "0");
+    return `${day}-${month}-${year}`;
+  };
 
-    // Función para formatear la fecha
-    const formatDate = (date) => {
-      if (!date) return "";
-      const d = new Date(date);
-      const year = d.getFullYear();
-      const month = (d.getMonth() + 1).toString().padStart(2, "0");
-      const day = d.getDate().toString().padStart(2, "0");
-      return `${day}-${month}-${year}`;
-    };
+  personas.forEach(persona => {
+    const cliente = persona.Cliente || {}; // asegurar que sea un objeto
+    const presupuestos = cliente.Presupuestos || [];
 
-    if (!presupuestosMap.has(numPresupuesto)) {
-      presupuestosMap.set(numPresupuesto, {
-        numPresupuesto,
-        fechaInicio: formatDate(row.fechainicio),
-        cliente: `${row.apellido} ${row.nombre}`,
-        correo: row.correo,
-        ubicacion: row.direccion,
-        numticket: row.numticket,
-        okTecnico: row.oktecnico ? "SI" : "NO",
-        monto: row.monto,
-        montocerrado: row.montocerrado,
-        estado: row.estado,
-        fechaGanada: formatDate(row.fechaganada),
-        celular: row.celular,
-        nota: row.nota,
-        urgencia: row.urgencia,
+    // Si no hay presupuestos, igual creamos un objeto "vacío" por persona
+    if (presupuestos.length === 0) {
+      presupuestosMap.set(`persona-${persona.dataValues.correo}`, {
+        numPresupuesto: null,
+        fechaInicio: "",
+        cliente: `${persona.dataValues.apellido} ${persona.dataValues.nombre}`,
+        correo: persona.dataValues.correo,
+        ubicacion: "",
+        numticket: "",
+        okTecnico: "",
+        monto: 0,
+        montocerrado: 0,
+        estado: "",
+        fechaGanada: "",
+        celular: cliente.celular || "",
+        nota: "",
+        urgencia: "",
         aberturas: [],
-        archivo: [],
+        archivos: [],
         responsables: [],
       });
     }
 
-    const presupuesto = presupuestosMap.get(numPresupuesto);
+    presupuestos.forEach(presupuestoRow => {
+      const numPresupuesto = presupuestoRow.numpresupuesto;
 
-    // Añadir abertura si no está repetida
-    if (!presupuesto.aberturas.some((a) => a.idAbertura === row.idabertura)) {
-      presupuesto.aberturas.push({
-        idAbertura: row.idabertura,
-        nombretipologia: row.nombretipologia,
-        nombreAbertura: row.nombreabertura,
-        ancho: row.ancho,
-        alto: row.alto,
-        cantidad: row.cantidad,
-        tipolinea: row.tipolinea,
-        tipovidrio: row.tipovidrio,
-        color: row.color,
-        nombrevidrio: row.nombrevidrio,
-        mosquitero: row.mosquitero,
-        accionamiento: row.accionamiento,
-        acoplamiento: row.acoplamiento,
-        detalle: row.detalle,
-      });
-    }
+      if (!presupuestosMap.has(numPresupuesto)) {
+        presupuestosMap.set(numPresupuesto, {
+          numPresupuesto,
+          fechaInicio: formatDate(presupuestoRow.fechainicio),
+          cliente: `${persona.dataValues.apellido} ${persona.dataValues.nombre}`,
+          correo: persona.dataValues.correo,
+          ubicacion: presupuestoRow.direccion || "",
+          numticket: presupuestoRow.numticket || "",
+          okTecnico: presupuestoRow.oktecnico ? "SI" : "NO",
+          monto: presupuestoRow.monto || 0,
+          montocerrado: presupuestoRow.montocerrado || 0,
+          estado: presupuestoRow.estado || "",
+          fechaGanada: formatDate(presupuestoRow.fechaganada),
+          celular: cliente.celular || "",
+          nota: presupuestoRow.nota || "",
+          urgencia: presupuestoRow.urgencia || "",
+          aberturas: [],
+          archivos: [],
+          responsables: [],
+        });
+      }
 
-    // Añadir archivo si no está repetido
-    if (row.url && !presupuesto.archivo.some((file) => file.link === row.url)) {
-      presupuesto.archivo.push({
-        idarchivo: row.idarchivo,
-        nombre: row.nombreoriginal,
-        link: row.url,
-      });
-    }
+      const presupuesto = presupuestosMap.get(numPresupuesto);
 
-    // Añadir responsable si no está repetido
-    if (
-      row.responsable_dni &&
-      !presupuesto.responsables.some(
-        (r) => r.dni === row.responsable_dni && r.rol === row.responsable_tipo
-      )
-    ) {
-      presupuesto.responsables.push({
-        dni: row.responsable_dni,
-        rol: row.responsable_tipo, // Puede ser "CREADOR", "PRESUPUESTADOR" o "FINALIZADOR"
-        nombre: `${row.responsable_apellido} ${row.responsable_nombre}`,
-      });
-    }
+      // Aberturas
+      if (presupuestoRow.Aberturas) {
+        presupuestoRow.Aberturas.forEach(abertura => {
+          if (!presupuesto.aberturas.some(a => a.idAbertura === abertura.idabertura)) {
+            presupuesto.aberturas.push({
+              idAbertura: abertura.idabertura,
+              nombreAbertura: abertura.nombreabertura,
+              ancho: abertura.ancho,
+              alto: abertura.alto,
+              cantidad: abertura.cantidad,
+              mosquitero: abertura.mosquitero,
+              acoplamiento: abertura.acoplamiento,
+              detalle: abertura.detalle,
+              tipovidrio: abertura.tipovidrio,
+              nombretipologia: abertura.Tipologia?.nombretipologia || "",
+              tipolinea: abertura.Linea?.tipolinea || "",
+              color: abertura.Linea?.color || "",
+            });
+          }
+        });
+      }
+
+      // Archivos
+      if (presupuestoRow.Archivos) {
+        presupuestoRow.Archivos.forEach(file => {
+          if (!presupuesto.archivos.some(f => f.idarchivo === file.idarchivo)) {
+            presupuesto.archivos.push({
+              idarchivo: file.idarchivo,
+              nombre: file.nombreoriginal,
+              link: file.url,
+            });
+          }
+        });
+      }
+
+      // Responsables
+      if (presupuestoRow.Usuarios) {
+        presupuestoRow.Usuarios.forEach(usuario => {
+          const responsable = usuario.UsuarioPresupuesto;
+          if (
+            responsable &&
+            !presupuesto.responsables.some(r => r.dni === usuario.dni)
+          ) {
+            presupuesto.responsables.push({
+              dni: usuario.dni,
+              rol: responsable.responsable || "",
+              nombre: usuario.Persona ? `${usuario.Persona.apellido} ${usuario.Persona.nombre}` : "",
+            });
+          }
+        });
+      }
+    });
   });
 
   return Array.from(presupuestosMap.values());
 }
+
