@@ -1,7 +1,6 @@
 import sequelize from "../db.js";
 import { DataTypes } from "sequelize";
 
-
 export const Usuario = sequelize.define('usuario', {
   dni: { type: DataTypes.INTEGER, primaryKey: true },
   contrasenia: DataTypes.STRING,

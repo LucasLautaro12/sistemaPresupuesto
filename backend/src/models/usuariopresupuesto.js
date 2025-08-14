@@ -2,7 +2,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../db.js';
 
-
 export const UsuarioPresupuesto = sequelize.define('usuariopresupuesto', {
   dni: {
     type: DataTypes.INTEGER,

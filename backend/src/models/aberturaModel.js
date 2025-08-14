@@ -1,7 +1,7 @@
 //import { getPool } from "../db.js";
-import { getMaxId, Presupuesto } from "./presupuestoModel.js";
-import { getLineaByTipolinea, Linea } from "../models/lineaModel.js";
-import { getTipologiaByNombre, Tipologia } from "./tipologiaModel.js";
+import { Presupuesto } from "./presupuestoModel.js";
+import { Linea } from "../models/lineaModel.js";
+import { Tipologia } from "./tipologiaModel.js";
 import sequelize from "../db.js";
 import { DataTypes } from "sequelize";
 
@@ -23,33 +23,39 @@ export const Abertura = sequelize.define('abertura', {
 
 Abertura.hasMany(Presupuesto, {
   foreignKey: 'idabertura',
+  as:'Presupuesto',
   onUpdate: 'CASCADE',
   timestamps: false
 });
 
 Presupuesto.hasOne(Abertura, {
   foreignKey: 'idabertura',
+  as:'Abertura',
   onUpdate: 'CASCADE',
   timestamps: false
 });
 
 Linea.belongsTo(Abertura, {
   foreignKey: 'idlinea',
+  as:'Abertura',
   onDelete: 'CASCADE'
 });
 
 Abertura.hasOne(Linea, {
   foreignKey: 'idlinea',
+  as:'Linea',
   onDelete: 'CASCADE'
 });
 
 Tipologia.belongsTo(Abertura, {
   foreignKey: 'idtipologia',
+  as:'Abertura',
   onDelete: 'CASCADE'
 });
 
 Abertura.hasOne(Tipologia, {
   foreignKey: 'idtipologia',
+  as:'Tipologia',
   onDelete: 'CASCADE'
 });
 

@@ -23,6 +23,7 @@ Usuario.belongsToMany(Presupuesto, {
   through: 'usuariopresupuesto',
   foreignKey: 'numpresupuesto',
   otherKey: 'dni',
+  as:'Presupuesto',
   onDelete: 'SET NULL',
   onUpdate: 'CASCADE',
   timestamps: false
@@ -32,6 +33,7 @@ Presupuesto.belongsToMany(Usuario, {
   through: 'usuariopresupuesto',
   foreignKey: 'dni',
   otherKey: 'numpresupuesto',
+  as:'Usuario',
   onDelete: 'SET NULL',
   onUpdate: 'CASCADE',
   timestamps: false
@@ -41,6 +43,7 @@ Archivo.belongsToMany(Presupuesto, {
   through: 'archivopresupuesto',
   foreignKey: 'numpresupuesto',
   otherKey: 'idarchivo',
+  as:'Presupuesto',
   onDelete: 'SET NULL',
   onUpdate: 'CASCADE',
   timestamps: false
@@ -50,6 +53,7 @@ Presupuesto.belongsToMany(Archivo, {
   through: 'archivopresupuesto',
   foreignKey: 'idarchivo',
   otherKey: 'numpresupuesto',
+  as:'Archivo',
   onDelete: 'SET NULL',
   onUpdate: 'CASCADE',
   timestamps: false

@@ -1,60 +1,63 @@
-import { Abertura } from "../models/aberturaModel.js";
-import { Cliente } from "../models/clientModel.js";
 import { Persona } from "../models/personaModel.js";
+import { Cliente } from "../models/clientModel.js";
 import { Presupuesto } from "../models/presupuestoModel.js";
-import { Usuario } from "../models/usuarioModel.js";
+import { Abertura } from "../models/aberturaModel.js";
 import { Tipologia } from "../models/tipologiaModel.js";
 import { Linea } from "../models/lineaModel.js";
 import { Archivo } from "../models/archivoModel.js";
+import { Usuario } from "../models/usuarioModel.js";
 import { UsuarioPresupuesto } from "../models/usuariopresupuesto.js";
 
 export async function getAllPresupuestos() {
-  const query = await Persona.findAll({
+  return Persona.findAll({
     attributes: ['nombre', 'apellido', 'correo'],
     include: [{
       model: Cliente,
+      as: 'Cliente',
       attributes: ['celular'],
       required: false,
       include: [{
         model: Presupuesto,
+        as: 'Presupuesto',
         attributes: [
           'numpresupuesto', 'fechainicio', 'urgencia', 'oktecnico',
           'monto', 'montocerrado', 'estado', 'fechaganada', 'nota', 'direccion', 'numticket'
         ],
+        required: false,
         include: [
           {
             model: Abertura,
+            as: 'Abertura',
             attributes: [
-              'idabertura', 'nombreabertura', 'ancho', 'alto', 'cantidad', 'mosquitero',
-              'acoplamiento', 'detalle', 'tipovidrio'
+              'idabertura', 'nombreabertura', 'ancho', 'alto', 'cantidad',
+              'mosquitero', 'acoplamiento', 'detalle', 'tipovidrio'
             ],
             required: false,
             include: [
-              { model: Tipologia, attributes: ['nombretipologia'], required: false, },
-              { model: Linea, attributes: ['tipolinea', 'color'], required: false, }
+              { model: Tipologia, as: 'Tipologia', attributes: ['nombretipologia'], required: false },
+              { model: Linea, as: 'Linea', attributes: ['tipolinea', 'color'], required: false }
             ]
           },
           {
-            model: Archivo, // si esta es la tabla de archivos
+            model: Archivo,
+            as: 'Archivo',
             attributes: ['idarchivo', 'url', 'nombreoriginal'],
-            required: false,
+            required: false
           },
           {
             model: Usuario,
+            as: 'Usuario',
             attributes: ['dni'],
             required: false,
             through: { model: UsuarioPresupuesto, attributes: ['responsable'], required: false },
-            
             include: [
-              { model: Persona, attributes: ['nombre', 'apellido'], required: false }
+              { model: Persona, as: 'Persona', attributes: ['nombre', 'apellido'], required: false }
             ]
           }
         ]
       }]
     }]
   });
-
-  return query;
 }
 
 export async function transformResult() {
@@ -64,23 +67,19 @@ export async function transformResult() {
   const formatDate = (date) => {
     if (!date) return "";
     const d = new Date(date);
-    const year = d.getFullYear();
-    const month = (d.getMonth() + 1).toString().padStart(2, "0");
-    const day = d.getDate().toString().padStart(2, "0");
-    return `${day}-${month}-${year}`;
+    return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
   };
 
   personas.forEach(persona => {
-    const cliente = persona.Cliente || {}; // asegurar que sea un objeto
+    const cliente = persona.Cliente || {};
     const presupuestos = cliente.Presupuestos || [];
 
-    // Si no hay presupuestos, igual creamos un objeto "vacío" por persona
     if (presupuestos.length === 0) {
-      presupuestosMap.set(`persona-${persona.dataValues.correo}`, {
+      presupuestosMap.set(`persona-${persona.correo}`, {
         numPresupuesto: null,
         fechaInicio: "",
-        cliente: `${persona.dataValues.apellido} ${persona.dataValues.nombre}`,
-        correo: persona.dataValues.correo,
+        cliente: `${persona.apellido} ${persona.nombre}`,
+        correo: persona.correo,
         ubicacion: "",
         numticket: "",
         okTecnico: "",
@@ -104,8 +103,8 @@ export async function transformResult() {
         presupuestosMap.set(numPresupuesto, {
           numPresupuesto,
           fechaInicio: formatDate(presupuestoRow.fechainicio),
-          cliente: `${persona.dataValues.apellido} ${persona.dataValues.nombre}`,
-          correo: persona.dataValues.correo,
+          cliente: `${persona.apellido} ${persona.nombre}`,
+          correo: persona.correo,
           ubicacion: presupuestoRow.direccion || "",
           numticket: presupuestoRow.numticket || "",
           okTecnico: presupuestoRow.oktecnico ? "SI" : "NO",
@@ -125,37 +124,32 @@ export async function transformResult() {
       const presupuesto = presupuestosMap.get(numPresupuesto);
 
       // Aberturas
-      if (presupuestoRow.Aberturas) {
-        presupuestoRow.Aberturas.forEach(abertura => {
-          if (!presupuesto.aberturas.some(a => a.idAbertura === abertura.idabertura)) {
-            presupuesto.aberturas.push({
-              idAbertura: abertura.idabertura,
-              nombreAbertura: abertura.nombreabertura,
-              ancho: abertura.ancho,
-              alto: abertura.alto,
-              cantidad: abertura.cantidad,
-              mosquitero: abertura.mosquitero,
-              acoplamiento: abertura.acoplamiento,
-              detalle: abertura.detalle,
-              tipovidrio: abertura.tipovidrio,
-              nombretipologia: abertura.Tipologia?.nombretipologia || "",
-              tipolinea: abertura.Linea?.tipolinea || "",
-              color: abertura.Linea?.color || "",
-            });
-          }
+      if (presupuestoRow.Abertura) {
+        const abertura = presupuestoRow.Abertura;
+        presupuesto.aberturas.push({
+          idAbertura: abertura.idabertura,
+          nombreAbertura: abertura.nombreabertura,
+          ancho: abertura.ancho,
+          alto: abertura.alto,
+          cantidad: abertura.cantidad,
+          mosquitero: abertura.mosquitero,
+          acoplamiento: abertura.acoplamiento,
+          detalle: abertura.detalle,
+          tipovidrio: abertura.tipovidrio,
+          nombretipologia: abertura.Tipologia?.nombretipologia || "",
+          tipolinea: abertura.Linea?.tipolinea || "",
+          color: abertura.Linea?.color || ""
         });
       }
 
       // Archivos
       if (presupuestoRow.Archivos) {
         presupuestoRow.Archivos.forEach(file => {
-          if (!presupuesto.archivos.some(f => f.idarchivo === file.idarchivo)) {
-            presupuesto.archivos.push({
-              idarchivo: file.idarchivo,
-              nombre: file.nombreoriginal,
-              link: file.url,
-            });
-          }
+          presupuesto.archivos.push({
+            idarchivo: file.idarchivo,
+            nombre: file.nombreoriginal,
+            link: file.url
+          });
         });
       }
 
@@ -163,16 +157,11 @@ export async function transformResult() {
       if (presupuestoRow.Usuarios) {
         presupuestoRow.Usuarios.forEach(usuario => {
           const responsable = usuario.UsuarioPresupuesto;
-          if (
-            responsable &&
-            !presupuesto.responsables.some(r => r.dni === usuario.dni)
-          ) {
-            presupuesto.responsables.push({
-              dni: usuario.dni,
-              rol: responsable.responsable || "",
-              nombre: usuario.Persona ? `${usuario.Persona.apellido} ${usuario.Persona.nombre}` : "",
-            });
-          }
+          presupuesto.responsables.push({
+            dni: usuario.dni,
+            rol: responsable?.responsable || "",
+            nombre: usuario.Persona ? `${usuario.Persona.apellido} ${usuario.Persona.nombre}` : ""
+          });
         });
       }
     });
@@ -180,4 +169,3 @@ export async function transformResult() {
 
   return Array.from(presupuestosMap.values());
 }
-

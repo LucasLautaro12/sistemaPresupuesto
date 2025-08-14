@@ -1,7 +1,7 @@
 //import { getPool } from "../db.js";
 import { DataTypes } from "sequelize";
 import sequelize from "../db.js";
-import { getMaxId, Presupuesto } from "./presupuestoModel.js";
+import { Presupuesto } from "./presupuestoModel.js";
 
 export const Cliente = sequelize.define('clietne', {
   celular: {
@@ -13,6 +13,7 @@ Cliente.belongsToMany(Presupuesto, {
   through: 'clientepresupuesto',
   foreignKey: 'numpresupuesto',
   otherKey: 'celular',
+  as:'Presupuesto',
   onDelete: 'SET NULL',
   onUpdate: 'CASCADE',
   timestamps: false
@@ -22,6 +23,7 @@ Presupuesto.belongsToMany(Cliente, {
   through: 'clientepresupuesto',
   foreignKey: 'celular',
   otherKey: 'numpresupuesto',
+  as:'Cliente',
   onDelete: 'SET NULL',
   onUpdate: 'CASCADE',
   timestamps: false
