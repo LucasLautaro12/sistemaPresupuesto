@@ -36,7 +36,7 @@ export const usuario = async (req, res) => {
     if (!usuarios || usuarios.length === 0) {
       return res.status(404).json({ message: "No se encontraron usuarios." });
     }
-
+    
     const usuariosFormateados = usuarios.map((usuario) => {
       const permisos = usuario.rols?.flatMap(rol => rol.permisos || []).map(p => p.nombre) || [];
 
