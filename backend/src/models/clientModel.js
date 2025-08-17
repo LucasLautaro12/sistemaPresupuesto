@@ -13,7 +13,7 @@ Cliente.belongsToMany(Presupuesto, {
   through: 'clientepresupuesto',
   foreignKey: 'numpresupuesto',
   otherKey: 'celular',
-  as:'Presupuesto',
+  as:'presupuesto',
   onDelete: 'SET NULL',
   onUpdate: 'CASCADE',
   timestamps: false
@@ -23,7 +23,7 @@ Presupuesto.belongsToMany(Cliente, {
   through: 'clientepresupuesto',
   foreignKey: 'celular',
   otherKey: 'numpresupuesto',
-  as:'Cliente',
+  as:'cliente',
   onDelete: 'SET NULL',
   onUpdate: 'CASCADE',
   timestamps: false

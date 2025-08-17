@@ -11,6 +11,7 @@ Usuario.belongsToMany(Rol, {
     through: 'usuariorol',
     foreignKey: 'dni',
     otherKey: 'idrol',
+    as: 'rols',
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
     timestamps: false
@@ -20,6 +21,7 @@ Rol.belongsToMany(Usuario, {
     through: 'usuariorol',
     foreignKey: 'idrol',
     otherKey: 'dni',
+    as: 'usuario',
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
     timestamps: false

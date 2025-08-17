@@ -23,39 +23,39 @@ export const Abertura = sequelize.define('abertura', {
 
 Abertura.hasMany(Presupuesto, {
   foreignKey: 'idabertura',
-  as:'Presupuesto',
+  as:'presupuesto',
   onUpdate: 'CASCADE',
   timestamps: false
 });
 
 Presupuesto.hasOne(Abertura, {
   foreignKey: 'idabertura',
-  as:'Abertura',
+  as:'abertura',
   onUpdate: 'CASCADE',
   timestamps: false
 });
 
 Linea.belongsTo(Abertura, {
   foreignKey: 'idlinea',
-  as:'Abertura',
+  as:'abertura',
   onDelete: 'CASCADE'
 });
 
 Abertura.hasOne(Linea, {
   foreignKey: 'idlinea',
-  as:'Linea',
+  as:'linea',
   onDelete: 'CASCADE'
 });
 
 Tipologia.belongsTo(Abertura, {
   foreignKey: 'idtipologia',
-  as:'Abertura',
+  as:'abertura',
   onDelete: 'CASCADE'
 });
 
 Abertura.hasOne(Tipologia, {
   foreignKey: 'idtipologia',
-  as:'Tipologia',
+  as:'tipologia',
   onDelete: 'CASCADE'
 });
 

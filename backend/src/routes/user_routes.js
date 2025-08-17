@@ -8,7 +8,7 @@ const router = Router();
 
 //Rutas de la vista usuario.
 // Desarrollo listo
-router.get("/usuario", /* auth, verificarPermiso(["ADMIN","LEER_PM_USER"]), */ usuario);
+router.get("/usuario", auth, verificarPermiso(["ADMIN","LEER_PM_USER"]), usuario);
 
 // Desarrollo listo 
 router.put("/usuarioInactive", auth, verificarPermiso(["ADMIN","ELIMINAR_USER"]), usuarioInactive);

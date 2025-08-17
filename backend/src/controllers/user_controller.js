@@ -17,11 +17,10 @@ export const usuario = async (req, res) => {
         {
           model: Persona,
           attributes: ['nombre', 'apellido', 'correo'],
-          as: 'Persona'
+          as: 'persona'
         },
         {
           model: Rol,
-          as: 'rols',
           include: [{
             model: Permiso,
             as: 'permisos',

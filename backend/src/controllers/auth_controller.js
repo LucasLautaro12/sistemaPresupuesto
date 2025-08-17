@@ -122,21 +122,22 @@ export const login = async (req, res) => {
         {
           model: Persona,
           attributes: ['nombre', 'apellido', 'correo'],
-          as: 'Persona'
+          as: 'persona'
         },
         {
           model: Rol,
           as: 'rols',
           include: [{
             model: Permiso,
-            as: 'permisos'
+            as: 'permisos',
+            attributes: ['idpermiso', 'nombre']
           }]
         }
       ]
     });
 
     if (!usuarioEncontrado || !usuarioEncontrado.estado) {
-      return res.stauts(401).json({
+      return res.status(401).json({
         message: "Usuario Invalido.",
       });
     }
@@ -153,19 +154,16 @@ export const login = async (req, res) => {
     }
 
     const permisos = usuarioEncontrado.rols
-      .flatMap(rol => rol.permisos || [])
-      .map(permiso => permiso.nombre);
-
+      ?.flatMap(rol => rol.permisos || [])
+      .map(permiso => permiso.nombre) || [];
 
     const token = await createAccessToken({
       idpersona: usuarioEncontrado.idpersona,
-      nombre: usuarioEncontrado.nombre,
-      apellido: usuarioEncontrado.apellido,
-      correo: usuarioEncontrado.correo,
+      nombre: usuarioEncontrado.persona?.nombre,
+      apellido: usuarioEncontrado.persona?.apellido,
+      correo: usuarioEncontrado.persona?.correo,
       permisos
     });
-
-    console.log(token)
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -176,8 +174,8 @@ export const login = async (req, res) => {
     return res.status(200).json({
       token,
       idpersona: usuarioEncontrado.idpersona,
-      nombre: usuarioEncontrado.nombre,
-      correo: usuarioEncontrado.correo,
+      nombre: usuarioEncontrado.persona?.nombre,
+      correo: usuarioEncontrado.persona?.correo,
       permisos
     });
   } catch (error) {
@@ -188,6 +186,7 @@ export const login = async (req, res) => {
     });
   }
 };
+
 
 //Peticiones POST
 export const logout = (req, res) => {

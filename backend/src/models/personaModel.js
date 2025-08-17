@@ -16,24 +16,24 @@ export const Persona = sequelize.define('persona', {
 
 Usuario.belongsTo(Persona, {
   foreignKey: 'idpersona',
-  as:"Persona",
+  as:"persona",
   onDelete: 'CASCADE'
 });
 
 Persona.hasOne(Usuario, {
   foreignKey: 'idpersona',
-  as:'Usuario',
+  as:'usuario',
   onDelete: 'CASCADE'
 });
 
 Cliente.belongsTo(Persona, {
   foreignKey: 'idpersona',
-  as:'Persona',
+  as:'persona',
   onDelete: 'CASCADE'
 });
 
 Persona.hasOne(Cliente, {
   foreignKey: 'celular',
-  as:'Cliente',
+  as:'cliente',
   onDelete: 'CASCADE'
 });
