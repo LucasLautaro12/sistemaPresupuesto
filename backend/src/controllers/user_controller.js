@@ -16,28 +16,32 @@ export const usuario = async (req, res) => {
       include: [
         {
           model: Persona,
+          as: 'persona', // ✅ igual que en Usuario.belongsTo(Persona, { as: 'persona' })
           attributes: ['nombre', 'apellido', 'correo'],
-          as: 'persona'
         },
         {
           model: Rol,
+          as: 'rols', // ✅ igual que en Usuario.belongsToMany(Rol, { as: 'rols' })
           include: [{
             model: Permiso,
-            as: 'permisos',
+            as: 'permisos', // ✅ igual que en Rol.belongsToMany(Permiso, { as: 'permisos' })
             attributes: ['idpermiso', 'nombre']
           }],
           attributes: ['idrol', 'nombrerol']
         }
       ],
-      attributes: ['dni', 'departamento', 'estado', 'primer_ingreso']
+      attributes: ['dni', 'departamento', 'estado', 'primer_ingreso'],
     });
+        
 
     if (!usuarios || usuarios.length === 0) {
       return res.status(404).json({ message: "No se encontraron usuarios." });
     }
-    
+
     const usuariosFormateados = usuarios.map((usuario) => {
-      const permisos = usuario.rols?.flatMap(rol => rol.permisos || []).map(p => p.nombre) || [];
+      const permisos = usuario.rols
+        ?.flatMap(rol => rol.permisos || [])
+        .map(p => p.nombre) || [];
 
       return {
         dni: usuario.dni,
@@ -47,8 +51,8 @@ export const usuario = async (req, res) => {
         nombre: usuario.persona?.nombre,
         apellido: usuario.persona?.apellido,
         correo: usuario.persona?.correo,
-        roles: usuario.rols?.map(r => r.nombrerol),
-        permisos: [...new Set(permisos)] // elimina duplicados si hay varios roles con el mismo permiso
+        roles: usuario.rols?.map(r => r.nombrerol) || [],
+        permisos: [...new Set(permisos)] // elimina duplicados
       };
     });
 
@@ -62,6 +66,7 @@ export const usuario = async (req, res) => {
     });
   }
 };
+
 
 // Petición PUT
 //Probar

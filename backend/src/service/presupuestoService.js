@@ -11,47 +11,48 @@ import { UsuarioPresupuesto } from "../models/usuariopresupuesto.js";
 export async function getAllPresupuestos() {
   return Persona.findAll({
     attributes: ['nombre', 'apellido', 'correo'],
+    limit: 3,
     include: [{
       model: Cliente,
-      as: 'Cliente',
+      as: 'cliente',   // ✅ en minúscula
       attributes: ['celular'],
       required: false,
       include: [{
         model: Presupuesto,
-        as: 'Presupuesto',
+        as: 'presupuesto',  // 👀 revisa también este alias
         attributes: [
-          'numpresupuesto', 'fechainicio', 'urgencia', 'oktecnico',
-          'monto', 'montocerrado', 'estado', 'fechaganada', 'nota', 'direccion', 'numticket'
+          'numpresupuesto', 'fechainicio', 'urgencia', 'nota',
+          'oktecnico', 'estado', 'fechaganada', 'direccion'
         ],
         required: false,
         include: [
           {
             model: Abertura,
-            as: 'Abertura',
+            as: 'abertura',   // 👀 revisa igual aquí
             attributes: [
               'idabertura', 'nombreabertura', 'ancho', 'alto', 'cantidad',
               'mosquitero', 'acoplamiento', 'detalle', 'tipovidrio'
             ],
             required: false,
             include: [
-              { model: Tipologia, as: 'Tipologia', attributes: ['nombretipologia'], required: false },
-              { model: Linea, as: 'Linea', attributes: ['tipolinea', 'color'], required: false }
+              { model: Tipologia, as: 'tipologia', attributes: ['nombretipologia'], required: false },
+              { model: Linea, as: 'linea', attributes: ['tipolinea', 'color'], required: false }
             ]
           },
           {
             model: Archivo,
-            as: 'Archivo',
+            as: 'archivo',
             attributes: ['idarchivo', 'url', 'nombreoriginal'],
             required: false
           },
           {
             model: Usuario,
-            as: 'Usuario',
+            as: 'usuario',
             attributes: ['dni'],
             required: false,
             through: { model: UsuarioPresupuesto, attributes: ['responsable'], required: false },
             include: [
-              { model: Persona, as: 'Persona', attributes: ['nombre', 'apellido'], required: false }
+              { model: Persona, as: 'persona', attributes: ['nombre', 'apellido'], required: false }
             ]
           }
         ]

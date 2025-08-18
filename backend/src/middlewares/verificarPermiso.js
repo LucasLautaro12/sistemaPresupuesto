@@ -15,12 +15,14 @@ export const verificarPermiso = (permisosRequeridos) => async (req, res, next) =
     const persona = await Persona.findByPk(idpersona, {
       include: {
         model: Usuario,
-        as: 'Usuario',
+        as: 'usuario',
         include: {
           model: Rol,
+          as:'rols',
           through: { attributes: [] }, // evitar campos extra de usuariorol
           include: {
             model: Permiso,
+            as:'permisos',
             through: { attributes: [] }, // evitar campos extra de rolpermiso
           },
         },
