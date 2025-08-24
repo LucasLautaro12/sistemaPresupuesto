@@ -3,7 +3,7 @@ import { DataTypes } from "sequelize";
 import sequelize from "../db.js";
 import { Presupuesto } from "./presupuestoModel.js";
 
-export const Cliente = sequelize.define('clietne', {
+export const Cliente = sequelize.define('cliente', {
   celular: {
     type: DataTypes.INTEGER, primaryKey: true
   },
@@ -11,8 +11,8 @@ export const Cliente = sequelize.define('clietne', {
 
 Cliente.belongsToMany(Presupuesto, {
   through: 'clientepresupuesto',
-  foreignKey: 'numpresupuesto',
-  otherKey: 'celular',
+  foreignKey: 'celular',
+  otherKey: 'numpresupuesto',
   as:'presupuesto',
   onDelete: 'SET NULL',
   onUpdate: 'CASCADE',
@@ -21,8 +21,8 @@ Cliente.belongsToMany(Presupuesto, {
 
 Presupuesto.belongsToMany(Cliente, {
   through: 'clientepresupuesto',
-  foreignKey: 'celular',
-  otherKey: 'numpresupuesto',
+  foreignKey: 'numpresupuesto',
+  otherKey: 'celular',
   as:'cliente',
   onDelete: 'SET NULL',
   onUpdate: 'CASCADE',

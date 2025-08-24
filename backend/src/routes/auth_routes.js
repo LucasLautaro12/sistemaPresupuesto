@@ -21,6 +21,6 @@ router.post("/login", login);
 router.post("/logout", logout);
 
 // Desarrollo listo
-router.post("/verify", auth, verify);
+router.get("/verify", auth, verify);
 
 export default router;

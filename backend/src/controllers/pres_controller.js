@@ -4,12 +4,21 @@ import moment from "moment";
 
 import { uploadFile, uploadImage } from "../config/cloudinaryService.js";
 import { transformResult } from "../service/presupuestoService.js";
-import { saveArchivos } from "../models/archivoModel.js";
-import { saveAbertura } from "../models/aberturaModel.js";
+import { Archivo, saveArchivos } from "../models/archivoModel.js";
+import { Abertura, saveAbertura } from "../models/aberturaModel.js";
+import { Presupuesto } from "../models/presupuestoModel.js";
+import { Persona } from "../models/personaModel.js";
+import { Cliente } from "../models/clientModel.js";
+import { Tipologia } from "../models/tipologiaModel.js";
+import { Linea } from "../models/lineaModel.js";
+import { Usuario } from "../models/usuarioModel.js";
+import { UsuarioPresupuesto } from "../models/usuariopresupuesto.js";
 
 export const presupuesto = async (req, res) => {
   try {
     const presupuestos = await transformResult();
+    //const presupuestos = await 
+
     return res.json(presupuestos);
   } catch (error) {
     console.error("Error al obtener los presupuestos:", error);
@@ -77,9 +86,9 @@ export const formpresupuesto = async (req, res) => {
 
     // Convertimos los datos del body en objetos si es necesario
     const datosProcesados = parsearDatos(req.body);
-    const { cliente, presupuesto, abertura, usuario} = datosProcesados;
+    const { cliente, presupuesto, abertura, usuario } = datosProcesados;
     const archivos = req.files || []; // Si no hay archivos, dejamos un array vacío para evitar errores
-    
+
     try {
       // Aquí puedes guardar el presupuesto y abertura en la base de datos
       const numpresupuestoGuardado = await savePresupuesto(
@@ -89,7 +98,7 @@ export const formpresupuesto = async (req, res) => {
       );
 
       // todo lo de arriba ok
-      if (abertura){
+      if (abertura) {
         await saveAbertura(abertura, numpresupuestoGuardado);
       }
 
@@ -149,9 +158,9 @@ export const modificarpresupuesto = async (req, res) => {
 };
 
 export const modificarmonto = async (req, res) => {
-  
+
   const { monto, numpresupuesto, usuario } = req.body;
-  
+
   const montopresupuestado = parseFloat(monto)
   const numeropresupuesto = parseInt(numpresupuesto)
 

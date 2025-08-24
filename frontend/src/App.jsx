@@ -1,4 +1,3 @@
-/* CODIGO PRUEBA NO TOCAR FUNCIONACOMPLETAMENTE*/
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./auth/Login";
@@ -18,18 +17,9 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Función para verificar el token
+  // Función para verificar el token desde la cookie
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      verifyToken(token, setIsAuthenticated, setLoading);
-    } else {
-      console.log(
-        "No hay token válido. Configurando isAuthenticated en false."
-      ); // Depuración
-      setIsAuthenticated(false);
-      setLoading(false);
-    }
+    verifyToken(setIsAuthenticated, setLoading);
   }, []);
 
   const handleLogin = (status) => {
@@ -42,65 +32,68 @@ function App() {
 
   return (
     <AuthProvider>
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login onLogin={handleLogin} />} />
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <DefaultRoute />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/usuario"
-          element={
-            <ProtectedRoute 
-            isAuthenticated={isAuthenticated}
-            requiredPermissions={["ADMIN"]}>
-              <Usuario />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/*"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <CreateUserRoutes />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/presupuestos"
-          element={
-            <ProtectedRoute 
-            isAuthenticated={isAuthenticated}
-            requiredPermissions={["LEER_PM_PRES", "ADMIN"]}>
-              <ListaPresupuesto />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/formpresupuesto"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <NewPresupuesto />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/tks"
-          element={
-            <ProtectedRoute 
-            isAuthenticated={isAuthenticated}
-            requiredPermissions={["LEER_PM_TK", "ADMIN"]}>
-              <ListaTK />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </Router>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login onLogin={handleLogin} />} />
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <DefaultRoute />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/usuario"
+            element={
+              <ProtectedRoute 
+                isAuthenticated={isAuthenticated}
+                requiredPermissions={["ADMIN"]}
+              >
+                <Usuario />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/*"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <CreateUserRoutes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/presupuestos"
+            element={
+              <ProtectedRoute 
+                isAuthenticated={isAuthenticated}
+                requiredPermissions={["LEER_PM_PRES", "ADMIN"]}
+              >
+                <ListaPresupuesto />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/formpresupuesto"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <NewPresupuesto />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tks"
+            element={
+              <ProtectedRoute 
+                isAuthenticated={isAuthenticated}
+                requiredPermissions={["LEER_PM_TK", "ADMIN"]}
+              >
+                <ListaTK />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
     </AuthProvider>
   );
 }

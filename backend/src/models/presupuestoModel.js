@@ -10,10 +10,13 @@ export const Presupuesto = sequelize.define('presupuesto', {
   fechainicio: DataTypes.DATE,
   urgencia: DataTypes.BOOLEAN,
   nota: DataTypes.TEXT,
+  monto: DataTypes.INTEGER,
+  montocerrado: DataTypes.INTEGER,
   oktecnico: DataTypes.BOOLEAN,
   estado: DataTypes.STRING,
   fechaganada: DataTypes.DATE,
-  direccion: DataTypes.STRING
+  direccion: DataTypes.STRING,
+  urgencia: DataTypes.BOOLEAN
 }, {
   tableName: 'presupuesto', 
   timestamps: false
@@ -21,8 +24,8 @@ export const Presupuesto = sequelize.define('presupuesto', {
 
 Usuario.belongsToMany(Presupuesto, {
   through: 'usuariopresupuesto',
-  foreignKey: 'numpresupuesto',
-  otherKey: 'dni',
+  foreignKey: 'dni',
+  otherKey: 'numpresupuesto',
   as:'presupuesto',
   onDelete: 'SET NULL',
   onUpdate: 'CASCADE',
@@ -31,8 +34,8 @@ Usuario.belongsToMany(Presupuesto, {
 
 Presupuesto.belongsToMany(Usuario, {
   through: 'usuariopresupuesto',
-  foreignKey: 'dni',
-  otherKey: 'numpresupuesto',
+  foreignKey: 'numpresupuesto',
+  otherKey: 'dni',
   as:'usuario',
   onDelete: 'SET NULL',
   onUpdate: 'CASCADE',

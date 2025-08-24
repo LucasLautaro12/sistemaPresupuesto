@@ -35,25 +35,25 @@ Presupuesto.hasOne(Abertura, {
   timestamps: false
 });
 
-Linea.belongsTo(Abertura, {
+Linea.hasMany(Abertura, {
   foreignKey: 'idlinea',
   as:'abertura',
   onDelete: 'CASCADE'
 });
 
-Abertura.hasOne(Linea, {
+Abertura.belongsTo(Linea, {
   foreignKey: 'idlinea',
   as:'linea',
   onDelete: 'CASCADE'
 });
 
-Tipologia.belongsTo(Abertura, {
+Tipologia.hasMany(Abertura, {
   foreignKey: 'idtipologia',
   as:'abertura',
   onDelete: 'CASCADE'
 });
 
-Abertura.hasOne(Tipologia, {
+Abertura.belongsTo(Tipologia, {
   foreignKey: 'idtipologia',
   as:'tipologia',
   onDelete: 'CASCADE'

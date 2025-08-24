@@ -1,24 +1,21 @@
 import axios from "axios";
 import { urlBackend } from "../App";
 
-export const verifyToken = async (token, setIsAuthenticated, setLoading) => {
+export const verifyToken = async (setIsAuthenticated, setLoading) => {
   try {
-    const response = await axios.post(
-      `${urlBackend}/verify`,
-      { token },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    // No enviamos token, axios enviará las cookies automáticamente
+    const response = await axios.get(`${urlBackend}/verify`, {
+      withCredentials: true, // IMPORTANTE para enviar cookies
+    });
+
     if (response.status === 200) {
       setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
     }
   } catch (error) {
-    console.error("Error al verificar el token:", error); // Depuración
+    console.error("Error al verificar el token:", error);
     setIsAuthenticated(false);
-    localStorage.removeItem("token"); // Eliminar token inválido
   } finally {
     setLoading(false);
   }

@@ -9,60 +9,68 @@ import { Usuario } from "../models/usuarioModel.js";
 import { UsuarioPresupuesto } from "../models/usuariopresupuesto.js";
 
 export async function getAllPresupuestos() {
-  return Persona.findAll({
-    attributes: ['nombre', 'apellido', 'correo'],
-    limit: 3,
-    include: [{
-      model: Cliente,
-      as: 'cliente',   // ✅ en minúscula
-      attributes: ['celular'],
-      required: false,
-      include: [{
-        model: Presupuesto,
-        as: 'presupuesto',  // 👀 revisa también este alias
-        attributes: [
-          'numpresupuesto', 'fechainicio', 'urgencia', 'nota',
-          'oktecnico', 'estado', 'fechaganada', 'direccion'
-        ],
-        required: false,
+  return await Presupuesto.findAll({
+    attributes: [
+      "numpresupuesto",
+      "fechainicio",
+      "urgencia",
+      "nota",
+      "monto",
+      "montocerrado",
+      "oktecnico",
+      "estado",
+      "fechaganada",
+      "direccion","urgencia"
+    ],
+    include: [
+      {
+        model: Cliente,
+        as: 'cliente',
+        attributes: ['celular'],
+        through: { attributes: [] },
+        //where: { celular: '38880101010' }, // 👈 filtro en cliente
         include: [
           {
-            model: Abertura,
-            as: 'abertura',   // 👀 revisa igual aquí
-            attributes: [
-              'idabertura', 'nombreabertura', 'ancho', 'alto', 'cantidad',
-              'mosquitero', 'acoplamiento', 'detalle', 'tipovidrio'
-            ],
-            required: false,
-            include: [
-              { model: Tipologia, as: 'tipologia', attributes: ['nombretipologia'], required: false },
-              { model: Linea, as: 'linea', attributes: ['tipolinea', 'color'], required: false }
-            ]
-          },
-          {
-            model: Archivo,
-            as: 'archivo',
-            attributes: ['idarchivo', 'url', 'nombreoriginal'],
-            required: false
-          },
-          {
-            model: Usuario,
-            as: 'usuario',
-            attributes: ['dni'],
-            required: false,
-            through: { model: UsuarioPresupuesto, attributes: ['responsable'], required: false },
-            include: [
-              { model: Persona, as: 'persona', attributes: ['nombre', 'apellido'], required: false }
-            ]
+            model: Persona,
+            as: 'persona',
+            attributes: ['nombre', 'apellido', 'correo']
           }
         ]
-      }]
-    }]
+      },
+      {
+        model: Abertura,
+        as: 'abertura',
+        attributes: ['idabertura', 'nombreabertura', 'ancho', 'alto', 'cantidad',
+            'mosquitero', 'acoplamiento', 'detalle', 'tipovidrio'],
+        include: [
+            { model: Tipologia, 
+              as: 'tipologia', 
+              attributes: ['nombretipologia'],},
+            { model: Linea, 
+              as: 'linea', 
+              attributes: ['tipolinea', 'color'],}
+          ]
+      },
+      {
+        model: Archivo,
+        as: 'archivo',
+        attributes: ['idarchivo', 'url', 'nombreoriginal'],
+      },
+      {
+        model: Usuario,
+        as: 'usuario',
+        attributes: ['dni'],
+        through: { model: UsuarioPresupuesto, attributes: ['responsable'], required: false },
+        include: [
+          { model: Persona, as: 'persona', attributes: ['nombre', 'apellido'], required: false }
+        ]
+      }        
+    ]
   });
 }
 
 export async function transformResult() {
-  const personas = await getAllPresupuestos();
+  const presupuestosRows = await getAllPresupuestos();
   const presupuestosMap = new Map();
 
   const formatDate = (date) => {
@@ -71,102 +79,81 @@ export async function transformResult() {
     return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
   };
 
-  personas.forEach(persona => {
-    const cliente = persona.Cliente || {};
-    const presupuestos = cliente.Presupuestos || [];
+  presupuestosRows.forEach(p => {
+    const numPresupuesto = p.numpresupuesto;
 
-    if (presupuestos.length === 0) {
-      presupuestosMap.set(`persona-${persona.correo}`, {
-        numPresupuesto: null,
-        fechaInicio: "",
-        cliente: `${persona.apellido} ${persona.nombre}`,
-        correo: persona.correo,
-        ubicacion: "",
-        numticket: "",
-        okTecnico: "",
-        monto: 0,
-        montocerrado: 0,
-        estado: "",
-        fechaGanada: "",
-        celular: cliente.celular || "",
-        nota: "",
-        urgencia: "",
+    if (!presupuestosMap.has(numPresupuesto)) {
+      // Tomamos el primer cliente del array si existe
+      const cliente = Array.isArray(p.cliente) && p.cliente.length > 0 ? p.cliente[0] : null;
+      const persona = cliente && cliente.persona ? cliente.persona : null;
+
+      presupuestosMap.set(numPresupuesto, {
+        numPresupuesto,
+        fechaInicio: formatDate(p.fechainicio),
+        cliente: persona ? `${persona.apellido} ${persona.nombre}` : "",
+        correo: persona ? persona.correo : "",
+        ubicacion: p.direccion || "",
+        numticket: p.numticket || "",
+        okTecnico: p.oktecnico ? "SI" : "NO",
+        monto: p.monto || 0,
+        montocerrado: p.montocerrado || 0,
+        estado: p.estado || "",
+        fechaGanada: formatDate(p.fechaganada),
+        celular: cliente ? cliente.celular : "",
+        nota: p.nota || "",
+        urgencia: p.urgencia,
         aberturas: [],
         archivos: [],
         responsables: [],
       });
     }
 
-    presupuestos.forEach(presupuestoRow => {
-      const numPresupuesto = presupuestoRow.numpresupuesto;
+    const presupuesto = presupuestosMap.get(numPresupuesto);
 
-      if (!presupuestosMap.has(numPresupuesto)) {
-        presupuestosMap.set(numPresupuesto, {
-          numPresupuesto,
-          fechaInicio: formatDate(presupuestoRow.fechainicio),
-          cliente: `${persona.apellido} ${persona.nombre}`,
-          correo: persona.correo,
-          ubicacion: presupuestoRow.direccion || "",
-          numticket: presupuestoRow.numticket || "",
-          okTecnico: presupuestoRow.oktecnico ? "SI" : "NO",
-          monto: presupuestoRow.monto || 0,
-          montocerrado: presupuestoRow.montocerrado || 0,
-          estado: presupuestoRow.estado || "",
-          fechaGanada: formatDate(presupuestoRow.fechaganada),
-          celular: cliente.celular || "",
-          nota: presupuestoRow.nota || "",
-          urgencia: presupuestoRow.urgencia || "",
-          aberturas: [],
-          archivos: [],
-          responsables: [],
-        });
-      }
-
-      const presupuesto = presupuestosMap.get(numPresupuesto);
-
-      // Aberturas
-      if (presupuestoRow.Abertura) {
-        const abertura = presupuestoRow.Abertura;
-        presupuesto.aberturas.push({
-          idAbertura: abertura.idabertura,
-          nombreAbertura: abertura.nombreabertura,
-          ancho: abertura.ancho,
-          alto: abertura.alto,
-          cantidad: abertura.cantidad,
-          mosquitero: abertura.mosquitero,
-          acoplamiento: abertura.acoplamiento,
-          detalle: abertura.detalle,
-          tipovidrio: abertura.tipovidrio,
-          nombretipologia: abertura.Tipologia?.nombretipologia || "",
-          tipolinea: abertura.Linea?.tipolinea || "",
-          color: abertura.Linea?.color || ""
-        });
-      }
-
-      // Archivos
-      if (presupuestoRow.Archivos) {
-        presupuestoRow.Archivos.forEach(file => {
-          presupuesto.archivos.push({
-            idarchivo: file.idarchivo,
-            nombre: file.nombreoriginal,
-            link: file.url
-          });
-        });
-      }
-
-      // Responsables
-      if (presupuestoRow.Usuarios) {
-        presupuestoRow.Usuarios.forEach(usuario => {
-          const responsable = usuario.UsuarioPresupuesto;
-          presupuesto.responsables.push({
-            dni: usuario.dni,
-            rol: responsable?.responsable || "",
-            nombre: usuario.Persona ? `${usuario.Persona.apellido} ${usuario.Persona.nombre}` : ""
-          });
-        });
-      }
+    // Aberturas (puede ser objeto o array)
+    const aberturas = Array.isArray(p.abertura) ? p.abertura : [p.abertura].filter(Boolean);
+    aberturas.forEach(a => {
+      presupuesto.aberturas.push({
+        idAbertura: a.idabertura,
+        nombreAbertura: a.nombreabertura,
+        ancho: a.ancho || 0,
+        alto: a.alto || 0,
+        cantidad: a.cantidad || 0,
+        mosquitero: !!a.mosquitero,
+        acoplamiento: !!a.acoplamiento,
+        detalle: a.detalle || "",
+        tipovidrio: a.tipovidrio || "",
+        nombretipologia: a.tipologia ? a.tipologia.nombretipologia : "",
+        tipolinea: a.linea ? a.linea.tipolinea : "",
+        color: a.linea ? a.linea.color : ""
+      });
     });
+
+    // Archivos
+    if (Array.isArray(p.archivo)) {
+      p.archivo.forEach(file => {
+        presupuesto.archivos.push({
+          idarchivo: file.idarchivo,
+          nombre: file.nombreoriginal || "",
+          link: file.url || ""
+        });
+      });
+    }
+
+    // Usuarios responsables
+    if (Array.isArray(p.usuario)) {
+      p.usuario.forEach(u => {
+        const responsable = u.usuariopresupuesto || u.UsuarioPresupuesto; // según cómo venga
+        const persona = u.persona || null;
+        presupuesto.responsables.push({
+          dni: u.dni || "",
+          rol: responsable ? responsable.responsable : "",
+          nombre: persona ? `${persona.apellido} ${persona.nombre}` : ""
+        });
+      });
+    }
   });
 
   return Array.from(presupuestosMap.values());
 }
+
