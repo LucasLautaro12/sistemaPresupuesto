@@ -4,20 +4,15 @@ import moment from "moment";
 
 import { uploadFile, uploadImage } from "../config/cloudinaryService.js";
 import { transformResult } from "../service/presupuestoService.js";
-import { Archivo, saveArchivos } from "../models/archivoModel.js";
-import { Abertura, saveAbertura } from "../models/aberturaModel.js";
-import { Presupuesto } from "../models/presupuestoModel.js";
-import { Persona } from "../models/personaModel.js";
-import { Cliente } from "../models/clientModel.js";
-import { Tipologia } from "../models/tipologiaModel.js";
-import { Linea } from "../models/lineaModel.js";
-import { Usuario } from "../models/usuarioModel.js";
+import { saveArchivos } from "../models/archivoModel.js";
+import { saveAbertura } from "../models/aberturaModel.js";
+import { Presupuesto, updatePresupuesto } from "../models/presupuestoModel.js";
 import { UsuarioPresupuesto } from "../models/usuariopresupuesto.js";
 
+//Listo
 export const presupuesto = async (req, res) => {
   try {
     const presupuestos = await transformResult();
-    //const presupuestos = await 
 
     return res.json(presupuestos);
   } catch (error) {
@@ -27,6 +22,7 @@ export const presupuesto = async (req, res) => {
     });
   }
 };
+
 
 async function subirArchivo(archivo) {
   const fileExtension = path.extname(archivo.originalname); // Obtiene la extensión del archivo (por ejemplo, .pdf)
@@ -120,34 +116,40 @@ export const formpresupuesto = async (req, res) => {
   }
 };
 
+//Listo
 export const modificarpresupuesto = async (req, res) => {
   //convertir todo a numero
   try {
     const {
-      numPresupuesto,
-      estado,
-      ubicacion,
-      okTecnico,
-      fechaInicio,
-      urgencia,
-      fechaGanada,
-      nota,
+      numPresupuesto, estado, ubicacion, okTecnico,
+      fechaInicio, urgencia, fechaGanada, nota,
     } = req.body.presupuesto;
 
-    const fechainicio = moment(fechaInicio, "DD-MM-YYYY").format("YYYY-MM-DD");
+    const fechainicio = fechaInicio ? moment(fechaInicio, "DD-MM-YYYY").format("YYYY-MM-DD") : null;
 
-    const presupuesto = new Presupuesto(
-      parseInt(numPresupuesto),
+    const presupuesto = {
+      numpresupuesto: parseInt(numPresupuesto),
       fechainicio,
       urgencia,
-      nota ? nota : "",
-      okTecnico,
+      nota: nota || "",
+      oktecnico: okTecnico,
       estado,
-      fechaGanada ? fechaGanada : null,
+      fechaganada: fechaGanada || null,
       ubicacion
-    );
+    };
 
-    await updatePresupuesto(presupuesto);
+    await Presupuesto.update({
+      fechainicio: presupuesto.fechainicio,
+      urgencia: presupuesto.urgencia,
+      nota: presupuesto.nota,
+      oktecnico: presupuesto.oktecnico,
+      estado: presupuesto.estado,
+      fechaganada: presupuesto.fechaganada,
+      ubicacion: presupuesto.ubicacion,
+    },{
+      where: {numpresupuesto: presupuesto.numpresupuesto}
+    }
+  );
 
     return res.json({
       message: "Presupuesto modificado correctamente",
@@ -157,21 +159,33 @@ export const modificarpresupuesto = async (req, res) => {
   }
 };
 
+//Listo
 export const modificarmonto = async (req, res) => {
 
   const { monto, numpresupuesto, usuario } = req.body;
 
   const montopresupuestado = parseFloat(monto)
   const numeropresupuesto = parseInt(numpresupuesto)
-
-  const query = `
-  UPDATE presupuesto
-  SET monto = $2
-  WHERE numpresupuesto = $1;`;
   const responsable = 'PRESUPUESTADOR';
 
   try {
-    const result = await updateMonto(montopresupuestado, numeropresupuesto, usuario, query, responsable)
+    const montoActualizado = await Presupuesto.update(
+      { monto: montopresupuestado },
+      {
+        where: { numpresupuesto: numeropresupuesto }
+      })
+
+    if (montoActualizado === 0) {
+      return res.status(404).json({ message: "Presupuesto NO encontrado" })
+    }
+
+    if (usuario) {
+      await UsuarioPresupuesto.upsert({
+        dni: usuario.dni,
+        numpresupuesto: numeropresupuesto,
+        responsable
+      })
+    }
     res.status(200).json({ message: result.message });
   } catch (error) {
     console.error("Error inesperado en la actualización del monto:", error);
@@ -184,22 +198,33 @@ export const modificarmonto = async (req, res) => {
   }
 };
 
+//Listo
 export const modificarmontocerrado = async (req, res) => {
 
   const { montocerrado, numpresupuesto, usuario } = req.body;
 
   const monto = parseFloat(montocerrado)
   const numeropresupuesto = parseInt(numpresupuesto)
-
-  const query = `
-  UPDATE presupuesto
-  SET montocerrado = $2
-  WHERE numpresupuesto = $1;`;
-
   const responsable = 'FINALIZADOR';
 
   try {
-    const result = await updateMonto(monto, numeropresupuesto, usuario, query, responsable)
+    const montoActualizado = await Presupuesto.update(
+      { montocerrado: montopresupuestado },
+      {
+        where: { numpresupuesto: numeropresupuesto }
+      })
+
+    if (montoActualizado === 0) {
+      return res.status(404).json({ message: "Presupuesto NO encontrado" })
+    }
+
+    if (usuario) {
+      await UsuarioPresupuesto.upsert({
+        dni: usuario.dni,
+        numpresupuesto: numeropresupuesto,
+        responsable
+      })
+    }
     res.status(200).json({ message: result.message });
   } catch (error) {
     console.error("Error inesperado en la actualización del monto:", error);

@@ -10,18 +10,8 @@ import { UsuarioPresupuesto } from "../models/usuariopresupuesto.js";
 
 export async function getAllPresupuestos() {
   return await Presupuesto.findAll({
-    attributes: [
-      "numpresupuesto",
-      "fechainicio",
-      "urgencia",
-      "nota",
-      "monto",
-      "montocerrado",
-      "oktecnico",
-      "estado",
-      "fechaganada",
-      "direccion","urgencia"
-    ],
+    attributes: ["numpresupuesto", "fechainicio", "urgencia", "nota", "monto", "montocerrado",
+      "oktecnico", "estado", "fechaganada", "direccion", "urgencia"],
     include: [
       {
         model: Cliente,
@@ -41,15 +31,19 @@ export async function getAllPresupuestos() {
         model: Abertura,
         as: 'abertura',
         attributes: ['idabertura', 'nombreabertura', 'ancho', 'alto', 'cantidad',
-            'mosquitero', 'acoplamiento', 'detalle', 'tipovidrio'],
+          'mosquitero', 'acoplamiento', 'detalle', 'tipovidrio'],
         include: [
-            { model: Tipologia, 
-              as: 'tipologia', 
-              attributes: ['nombretipologia'],},
-            { model: Linea, 
-              as: 'linea', 
-              attributes: ['tipolinea', 'color'],}
-          ]
+          {
+            model: Tipologia,
+            as: 'tipologia',
+            attributes: ['nombretipologia'],
+          },
+          {
+            model: Linea,
+            as: 'linea',
+            attributes: ['tipolinea', 'color'],
+          }
+        ]
       },
       {
         model: Archivo,
@@ -64,8 +58,9 @@ export async function getAllPresupuestos() {
         include: [
           { model: Persona, as: 'persona', attributes: ['nombre', 'apellido'], required: false }
         ]
-      }        
-    ]
+      }
+    ],
+    order: [["numpresupuesto", "DESC"]]
   });
 }
 
@@ -76,7 +71,7 @@ export async function transformResult() {
   const formatDate = (date) => {
     if (!date) return "";
     const d = new Date(date);
-    return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
+    return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
   };
 
   presupuestosRows.forEach(p => {
