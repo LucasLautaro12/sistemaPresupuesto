@@ -116,7 +116,7 @@ export const formpresupuesto = async (req, res) => {
   }
 };
 
-//Listo
+//probar
 export const modificarpresupuesto = async (req, res) => {
   //convertir todo a numero
   try {
@@ -159,7 +159,7 @@ export const modificarpresupuesto = async (req, res) => {
   }
 };
 
-//Listo
+//probar
 export const modificarmonto = async (req, res) => {
 
   const { monto, numpresupuesto, usuario } = req.body;
@@ -198,7 +198,7 @@ export const modificarmonto = async (req, res) => {
   }
 };
 
-//Listo
+//probar
 export const modificarmontocerrado = async (req, res) => {
 
   const { montocerrado, numpresupuesto, usuario } = req.body;
